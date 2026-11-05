@@ -84,7 +84,7 @@
   }
 
   a,
-  select {
+  button {
     -webkit-tap-highlight-color: transparent;
   }
 }
@@ -124,7 +124,6 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem 1rem;
-    padding-block: 1rem;
   }
 
   .site-name {
@@ -143,7 +142,7 @@
   .theme-control {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    flex-shrink: 0;
     visibility: hidden;
   }
 
@@ -151,16 +150,24 @@
     visibility: visible;
   }
 
-  .theme-select {
-    min-height: 2.75rem;
-    max-width: 100%;
-    padding: 0.5rem 0.25rem;
-    border: 1px solid var(--border);
-    border-radius: 0.25rem;
-    background: var(--surface);
-    color: var(--text);
-    font-size: 0.875rem;
+  .theme-button {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-block-end: 2px solid transparent;
+    color: var(--muted);
     cursor: pointer;
+  }
+
+  .theme-button:hover {
+    background: var(--panel);
+    color: var(--interactive);
+  }
+
+  .theme-button[aria-pressed='true'] {
+    border-color: var(--accent);
+    color: var(--interactive);
   }
 
   .site-navigation {
@@ -254,6 +261,49 @@
     padding-block: var(--section-space);
     border-block-start: 1px solid var(--divider);
   }
+
+  .experience-entry {
+    position: relative;
+    padding-inline-start: 1.25rem;
+    padding-block-end: 2.5rem;
+    border-inline-start: 1px solid var(--divider);
+  }
+
+  .experience-entry:last-child {
+    padding-block-end: 0;
+  }
+
+  .experience-entry::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -0.25rem;
+    inset-block-start: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .experience-details summary {
+    min-height: 2.75rem;
+    padding-block: 0.5rem;
+    color: var(--interactive);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .experience-details summary:hover {
+    color: var(--interactive-hover);
+  }
+
+  .experience-details .details-hide,
+  .experience-details[open] .details-show {
+    display: none;
+  }
+
+  .experience-details[open] .details-hide {
+    display: inline;
+  }
 }
 
 @media (min-width: 24rem) {
@@ -322,7 +372,35 @@
   }
 }
 
-/* Anchor jumps are immediate and the interface has no animation or transitions. */
+/* Keep disclosure motion optional without changing native keyboard behavior. */
+@media (prefers-reduced-motion: no-preference) {
+  .experience-details summary {
+    transition: color 140ms ease;
+  }
+
+  @supports (interpolate-size: allow-keywords) and (transition-behavior: allow-discrete) and
+    selector(details::details-content) {
+    .experience-details {
+      interpolate-size: allow-keywords;
+    }
+
+    .experience-details::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow: clip;
+      transition:
+        block-size 180ms ease,
+        opacity 140ms ease,
+        content-visibility 180ms allow-discrete;
+    }
+
+    .experience-details[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

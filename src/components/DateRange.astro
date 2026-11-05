@@ -1,0 +1,20 @@
+---
+import type { CareerDate } from '../content/schema';
+import { formatDate } from '../utils/formatDate';
+
+interface Props {
+  start: CareerDate;
+  end?: CareerDate;
+}
+
+const { start, end } = Astro.props;
+---
+
+<time datetime={start}>{formatDate(start)}</time>{
+  end && (
+    <>
+      {' to '}
+      <time datetime={end}>{formatDate(end)}</time>
+    </>
+  )
+}

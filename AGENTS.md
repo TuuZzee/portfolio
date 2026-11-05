@@ -7,11 +7,12 @@ This repository contains a small, public-facing personal portfolio website. Opti
 ## Stack and architecture
 
 - Use Astro with static output and strict TypeScript.
-- The current application has the M2 layout and theme foundation with neutral section placeholders. Implement only the milestone or changes explicitly requested. Full professional content belongs to M3, with localization deferred to later work.
+- Implement only the scope explicitly requested. Preserve existing design and behavior unless a change is required by the task.
 - Use Tailwind CSS 4 for styling, with semantic design tokens in `src/styles/global.css`.
 - Prefer `.astro` components and HTML over hydrated client frameworks. Add browser JavaScript only when interaction requires it.
 - Use small, focused components. Keep reusable layout components under `src/layouts/` or `src/components/`, and pages under `src/pages/`.
-- Keep factual data and localized copy separate from presentation components when content becomes structured.
+- Keep employer identity, role IDs, dates, locations and public URLs in `src/content/facts.ts`, with English presentation text in `src/content/locales/en.ts` and contracts in `src/content/schema.ts`. Do not duplicate chronological facts in prose or components.
+- Keep stable section IDs in `src/data/sections.ts`, with navigation labels and section titles drawn from the English content. No translation routes or placeholder locales should be added without a request.
 - Do not add a backend, API, CMS, state-management library, or runtime icon bundle without a concrete technical need.
 - Use Tabler SVG icons selectively, with accessible names when an icon conveys meaning.
 
@@ -22,6 +23,7 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Support light and dark themes. Ensure readable contrast, visible keyboard focus, and reduced-motion behavior.
 - Use semantic landmarks, a logical heading order, native controls, descriptive link text, and meaningful image alt text.
 - Keep navigation and interactive elements usable on small screens and with a keyboard.
+- Experience summaries, roles and dates must remain visible outside native `<details>` disclosures. Start disclosures collapsed, retain clear state affordances and keyboard focus, and keep interactive links/buttons out of `<summary>`.
 - In visitor-facing prose, prefer plain English and avoid em dashes and semicolons. This rule does not apply to programming syntax.
 
 ## TypeScript and code conventions

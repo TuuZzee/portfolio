@@ -1,11 +1,12 @@
 ---
+import { profile } from '../content/facts';
 import { sections } from '../data/sections';
 import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="site-header">
   <div class="site-container header-content">
-    <a href="#top" class="site-name">Guillaume Becker<span aria-hidden="true">.</span></a>
+    <a href="#top" class="site-name">{profile.name}<span aria-hidden="true">.</span></a>
     <ThemeToggle />
     <nav aria-label="Main" class="site-navigation">
       <ul>

@@ -1,10 +1,12 @@
 ---
+import { profile } from '../content/facts';
+
 const year = new Date().getUTCFullYear();
 ---
 
 <footer class="border-t border-divider">
   <div class="site-container flex flex-wrap items-center justify-between gap-4 py-8 text-sm">
-    <p class="text-muted">© {year} Guillaume Becker</p>
+    <p class="text-muted">© {year} {profile.name}</p>
     <a href="#top" class="text-link">Back to top <span aria-hidden="true">↑</span></a>
   </div>
 </footer>

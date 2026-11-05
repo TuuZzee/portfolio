@@ -1,0 +1,30 @@
+---
+import { experience } from '../content/facts';
+import { selectedWork } from '../content/locales/en';
+
+const stories = selectedWork.map((story) => {
+  const employer = experience.find(({ id }) => id === story.employerId);
+  if (!employer) {
+    throw new Error(`Unknown employer for selected work: ${story.id}`);
+  }
+  return { ...story, company: employer.company };
+});
+---
+
+<ul class="space-y-8">
+  {
+    stories.map(({ id, title, company, context, summary }) => (
+      <li>
+        <article aria-labelledby={`work-${id}`}>
+          <p class="text-sm text-interactive">
+            {company} · {context}
+          </p>
+          <h3 id={`work-${id}`} class="mt-2 text-lg leading-snug font-semibold text-text">
+            {title}
+          </h3>
+          <p class="mt-3">{summary}</p>
+        </article>
+      </li>
+    ))
+  }
+</ul>

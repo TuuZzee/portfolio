@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+
+/* Palette skeleton. Theme selection and persistence arrive in M2. */
+:root {
+  color-scheme: light;
+  --surface: #faf9f6;
+  --text: #242629;
+  --muted: #595d63;
+  --border: #7c8087;
+  --accent: #d96b28;
+  --interactive: #a34312;
+  --interactive-hover: #80330d;
+  --focus: #a34312;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --surface: #17191c;
+  --text: #f5f4f0;
+  --muted: #b5b8bf;
+  --border: #81858d;
+  --interactive: #f39a60;
+  --interactive-hover: #ffb384;
+  --focus: #f39a60;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-interactive: var(--interactive);
+  --color-interactive-hover: var(--interactive-hover);
+  --color-focus: var(--focus);
+}
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+}

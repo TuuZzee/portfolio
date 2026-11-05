@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.pnpm-store/
+.private/
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+.idea/
+*.log
+# No resume PDF is approved for public distribution yet.
+*.pdf

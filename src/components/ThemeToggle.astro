@@ -1,0 +1,57 @@
+<div class="theme-control">
+  <label for="theme-preference" class="text-sm font-medium">Theme</label>
+  <select id="theme-preference" class="theme-select" disabled>
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</div>
+
+<script>
+  const control = document.querySelector<HTMLSelectElement>('#theme-preference');
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  let preference = document.documentElement.dataset.themePreference ?? 'system';
+
+  function applyTheme() {
+    const theme = preference === 'system' ? (systemTheme.matches ? 'dark' : 'light') : preference;
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.themePreference = preference;
+    if (control) {
+      control.value = preference;
+    }
+  }
+
+  if (control) {
+    applyTheme();
+    control.disabled = false;
+    control.parentElement?.classList.add('is-ready');
+
+    control.addEventListener('change', () => {
+      preference = control.value;
+      applyTheme();
+      try {
+        if (preference === 'system') {
+          localStorage.removeItem('portfolio-theme');
+        } else {
+          localStorage.setItem('portfolio-theme', preference);
+        }
+      } catch {
+        // Theme changes still work for this visit when storage is unavailable.
+      }
+    });
+
+    systemTheme.addEventListener('change', () => {
+      if (preference === 'system') {
+        applyTheme();
+      }
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'portfolio-theme' || event.key === null) {
+        preference =
+          event.newValue === 'light' || event.newValue === 'dark' ? event.newValue : 'system';
+        applyTheme();
+      }
+    });
+  }
+</script>

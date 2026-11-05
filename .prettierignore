@@ -4,10 +4,3 @@ dist/
 .pnpm-store/
 .private/
 pnpm-lock.yaml
-# Preserve the approved source documents verbatim.
-AGENTS.md
-docs/PRODUCT_SPEC.md
-docs/CONTENT_SPEC_EN.md
-docs/ENGINEERING_STANDARDS.md
-docs/MILESTONES.md
-docs/M1_CODEX_PROMPT.md

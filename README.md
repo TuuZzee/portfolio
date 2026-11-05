@@ -1,45 +1,64 @@
 # Personal Portfolio
 
-Codebase project for simple portfolio.
+A static personal portfolio built with Astro, strict TypeScript and Tailwind CSS 4. The M2 UI foundation includes a responsive page scaffold, section navigation, light/dark themes, an optimized profile portrait and supplied favicons. Section text is intentionally placeholder copy pending content integration.
 
 ## Local development
 
-Use Node **24.22.1** (see `.node-version`) and **pnpm 12.16.1** (pinned in `package.json`). Install that pnpm version through your preferred package-manager installation method, then run:
+Use Node **24.22.1** (`.node-version`) and **pnpm 12.16.1** (`package.json`). With that toolchain installed:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm run dev
 ```
 
-The current `origin` is `https://github.com/TuuZzee/portfolio.git`. Open the printed local URL at `/portfolio/`. For production output, run `pnpm run build` followed by `pnpm run preview` and open `/portfolio/` again.
+Open the printed local URL at `/portfolio/`.
 
 ```sh
 pnpm run format:check
 pnpm run lint
 pnpm run check
 pnpm run build
+pnpm run preview
 ```
 
-`pnpm run format` applies Prettier. ESLint checks JavaScript, TypeScript and Astro, with typed rules scoped to `.ts` files. Astro frontmatter uses untyped TypeScript rules and template accessibility rules, with framework-aware type checking provided by `astro check`. Import ordering belongs to simple-import-sort. Prettier owns formatting and Tailwind class ordering through the CSS entry point.
+The production build is written to `dist/`. Preview it at the printed URL with `/portfolio/`. `pnpm run format` applies formatting.
 
-Use PascalCase for Astro components and typed `Props` contracts, camelCase for future TypeScript utilities/data, and semantic palette utilities such as `text-muted`. Palette tokens live in `src/styles/global.css`. The default light surface and dormant dark palette are ready for M2. Tabler SVG icons will be introduced when an actual icon is needed, without a client framework or runtime icon bundle.
+## Structure and conventions
+
+- `src/pages/index.astro`: English page scaffold.
+- `src/layouts/BaseLayout.astro`: shared head, favicon links, initial theme and skip link.
+- `src/components/`: header, theme control, section container, portrait and footer.
+- `src/data/sections.ts`: typed section IDs, navigation labels and neutral placeholders.
+- `src/styles/global.css`: semantic palette, typography, spacing and responsive layout.
+- `src/assets/`: approved portrait, optimized at build time.
+- `public/`: browser favicons and Apple touch icon.
+
+Astro components render static HTML. Navigation remains visible and usable without JavaScript. On narrow screens it wraps into a compact grid. The header becomes sticky on desktop, with an anchor scroll offset. The skip link and native controls support keyboard navigation.
+
+Theme selection offers **System**, **Light** and **Dark**. An early inline script applies the saved preference before rendering. The theme control stores explicit selections locally, follows system changes in System mode and synchronizes changes across tabs. Without JavaScript, CSS follows the system theme and hides the unavailable control. If browser storage is blocked, theme changes still work for the current visit.
+
+Palette tokens preserve the `#D96B28` accent and use accessible variants for text and controls. Layout width is capped at 68rem, prose at 65 characters, and section spacing scales between 3rem and 5rem. The portrait keeps its original aspect ratio. There are no animations, transitions, remote fonts or client framework dependencies.
+
+Use PascalCase for Astro components, typed `Props` contracts and camelCase for TypeScript utilities/data. Keep future factual career records separate from localized prose. ESLint handles correctness, TypeScript rules, Astro accessibility and import sorting. Prettier handles formatting and Tailwind ordering. Type-checked lint rules apply to `.ts` files, while `astro check` supplies framework-aware template checking.
+
+Favicon links use the configured base path. Only the supplied browser icons and Apple touch icon are included. A web manifest, install icons, service worker and PWA behavior are intentionally omitted. The supplied illustrated favicon remains unchanged, although fine detail is less distinct at 16px.
 
 ## GitHub Actions and Pages
 
-The **checks non-draft PRs targeting main** workflow ([checks-pr-draft-main.yml](.github/workflows/checks-pr-draft-main.yml)) automatically validates non-draft pull requests targeting `main`, including when a draft is marked ready for review. Draft pull requests skip checks, and converting a running PR back to draft cancels its previous run. Pushes to `main` do not trigger the workflow.
+The [PR checks workflow](.github/workflows/checks-pr-draft-main.yml), displayed as **checks non-draft PRs targeting main**, validates non-draft pull requests targeting `main`, including when marked ready for review. Draft PRs skip checks. Converting a running PR back to draft cancels its previous run. The workflow performs a frozen dependency install, formatting check, lint, Astro check and production build.
 
-Deployment lives in the separate **Deploy to GitHub Pages** workflow ([deploy.yml](.github/workflows/deploy.yml)) and is manual: open **Actions → Deploy to GitHub Pages → Run workflow**, select **main**, and run it. The manual run repeats all quality checks before uploading and deploying. Manual runs on other branches skip all jobs.
+The separate [Deploy to GitHub Pages workflow](.github/workflows/deploy.yml) is manual and repeats all checks before deployment. Pushes do not trigger either workflow. Leave deployment untriggered while the repository is private. No Pages deployment is part of M2.
 
-Both workflows use explicit install/check/build steps so each quality gate is visible. Only the deployment workflow uses the artifact upload and deployment actions used by the [official Astro Pages action](https://github.com/withastro/action). Dependency installation is frozen against `pnpm-lock.yaml`.
+Repository identity comes from `GITHUB_REPOSITORY` in Actions or the Git `origin` locally. `astro.config.mjs` derives the Pages site and base path. For `TuuZzee/portfolio`, the base is `/portfolio/`. A repository named `<owner>.github.io` uses `/`. Internal assets must use Astro imports or `import.meta.env.BASE_URL` rather than hard-coded root paths. In a source archive without Git metadata, set `GITHUB_REPOSITORY=TuuZzee/portfolio` when building and previewing to reproduce project-site routing.
 
-Repository identity comes from `GITHUB_REPOSITORY` in Actions, or the Git `origin` locally. The Astro configuration derives `site` and the project `base` (`/portfolio`) from that identity. A repository named `<owner>.github.io` uses `/` instead. A source archive without Git metadata defaults to `/` for local use. For an archive, set `GITHUB_REPOSITORY=TuuZzee/portfolio` when running build/preview to reproduce project-site routing. Future public links and assets must respect `import.meta.env.BASE_URL` or Astro imports.
+After implementation review and a change to public visibility:
 
-While the repository is private, use the PR checks workflow and leave the deployment workflow untriggered. After implementation is reviewed and you make the repository public, complete these manual prerequisites:
+1. Select **GitHub Actions** in **Settings → Pages → Build and deployment**.
+2. Permit the `github-pages` environment to deploy from `main`.
+3. Ensure the workflow exists on the default branch, then select **Actions → Deploy to GitHub Pages → Run workflow** and choose **main**. Other branches skip deployment.
 
-1. In GitHub **Settings → Pages → Build and deployment**, select **GitHub Actions**, as described in the [Astro deployment guide](https://docs.astro.build/en/guides/deploy/github/).
-2. Ensure Actions and the `github-pages` environment allow deployment from `main`.
-3. Push the reviewed implementation to the default branch so GitHub exposes the **Run workflow** button. Open **Actions → Deploy to GitHub Pages → Run workflow**, select **main**, then inspect the run and resulting `https://TuuZzee.github.io/portfolio/` site. Manual triggering follows [GitHub's workflow dispatch requirements](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch).
+The expected project URL is `https://TuuZzee.github.io/portfolio/`. Custom-domain setup remains deferred. Local checks do not establish a successful hosted CI run or deployment.
 
-No custom domain, repository settings change or remote push is part of M1. Local checks cannot establish a successful hosted deployment or CI run.
+## Public content boundaries
 
-The original unapproved resume has been preserved locally under ignored `.private/`, outside Astro's public directory. All PDFs are ignored until a sanitized public resume is approved. Never force-add this private file. The approved portrait was moved from the seed's `public/images/` to `src/assets/profile-face-400w.png` without modifying its bytes. Source specification documents remain unchanged.
+Treat all committed files and generated assets as public. Preserve `.private/` and PDF exclusions. Do not publish private source material, contact details or an unapproved resume. No resume download, contact form, analytics or availability status is included. Full career content, expandable experience details and localization are deferred beyond M2.

@@ -1,38 +1,67 @@
 @import 'tailwindcss';
 
-/* Palette skeleton. Theme selection and persistence arrive in M2. */
 :root {
   color-scheme: light;
   --surface: #faf9f6;
+  --panel: #f0eee8;
   --text: #242629;
   --muted: #595d63;
   --border: #7c8087;
+  --divider: #dedbd4;
   --accent: #d96b28;
   --interactive: #a34312;
   --interactive-hover: #80330d;
   --focus: #a34312;
+  --on-interactive: #ffffff;
+  --content-width: 68rem;
+  --prose-width: 65ch;
+  --section-space: clamp(3rem, 6vw, 5rem);
+  --anchor-offset: 1.5rem;
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
   --surface: #17191c;
+  --panel: #22252a;
   --text: #f5f4f0;
   --muted: #b5b8bf;
   --border: #81858d;
+  --divider: #393d44;
   --interactive: #f39a60;
   --interactive-hover: #ffb384;
   --focus: #f39a60;
+  --on-interactive: #17191c;
+}
+
+/* Preserve system theme support even when JavaScript is unavailable. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --surface: #17191c;
+    --panel: #22252a;
+    --text: #f5f4f0;
+    --muted: #b5b8bf;
+    --border: #81858d;
+    --divider: #393d44;
+    --interactive: #f39a60;
+    --interactive-hover: #ffb384;
+    --focus: #f39a60;
+    --on-interactive: #17191c;
+  }
 }
 
 @theme inline {
   --color-surface: var(--surface);
+  --color-panel: var(--panel);
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-divider: var(--divider);
   --color-accent: var(--accent);
   --color-interactive: var(--interactive);
   --color-interactive-hover: var(--interactive-hover);
   --color-focus: var(--focus);
+  --color-on-interactive: var(--on-interactive);
 }
 
 @layer base {
@@ -44,7 +73,258 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--focus);
+    outline: 3px solid var(--focus);
     outline-offset: 4px;
+  }
+
+  main,
+  section,
+  #top {
+    scroll-margin-block-start: var(--anchor-offset);
+  }
+
+  a,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .site-container {
+    width: min(100% - 2.5rem, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .skip-link {
+    position: fixed;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 1.25rem;
+    z-index: 30;
+    transform: translateY(-200%);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    background: var(--interactive);
+    color: var(--on-interactive);
+    font-weight: 600;
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+  .site-header {
+    z-index: 20;
+    border-block-end: 1px solid var(--divider);
+    background: var(--surface);
+  }
+
+  .header-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    padding-block: 1rem;
+  }
+
+  .site-name {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-size: 0.875rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .site-name span {
+    color: var(--accent);
+  }
+
+  .theme-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    visibility: hidden;
+  }
+
+  .theme-control.is-ready {
+    visibility: visible;
+  }
+
+  .theme-select {
+    min-height: 2.75rem;
+    max-width: 100%;
+    padding: 0.5rem 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .site-navigation {
+    flex-basis: 100%;
+  }
+
+  .site-navigation ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  .site-navigation a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding-inline: 0.25rem;
+    border-block-end: 2px solid transparent;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .site-navigation a:hover,
+  .site-navigation a:focus-visible {
+    border-color: var(--accent);
+    color: var(--interactive);
+  }
+
+  body:has(#about:target) .site-navigation a[href='#about'],
+  body:has(#work:target) .site-navigation a[href='#work'],
+  body:has(#experience:target) .site-navigation a[href='#experience'],
+  body:has(#skills:target) .site-navigation a[href='#skills'],
+  body:has(#education:target) .site-navigation a[href='#education'],
+  body:has(#contact:target) .site-navigation a[href='#contact'] {
+    border-color: var(--accent);
+    color: var(--interactive);
+  }
+
+  .hero {
+    display: grid;
+    align-items: center;
+    gap: 3rem;
+    padding-block: var(--section-space);
+  }
+
+  .profile-portrait {
+    display: block;
+    width: 240px;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--divider);
+    border-radius: 0.5rem;
+  }
+
+  .primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+    background: var(--interactive);
+    color: var(--on-interactive);
+    font-weight: 600;
+  }
+
+  .primary-link:hover {
+    background: var(--interactive-hover);
+  }
+
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--interactive);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .text-link:hover {
+    color: var(--interactive-hover);
+  }
+
+  .content-section {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: var(--section-space);
+    border-block-start: 1px solid var(--divider);
+  }
+}
+
+@media (min-width: 24rem) {
+  .profile-portrait {
+    width: 280px;
+  }
+}
+
+@media (min-width: 40rem) {
+  .site-name {
+    font-size: 1rem;
+  }
+
+  .site-navigation ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .site-navigation a {
+    padding-inline: 0.25rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 4rem;
+  }
+
+  .profile-portrait {
+    width: 320px;
+  }
+
+  .content-section {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --anchor-offset: 7rem;
+  }
+
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+  }
+
+  .header-content {
+    flex-wrap: nowrap;
+  }
+
+  .site-navigation {
+    order: 1;
+    flex-basis: auto;
+  }
+
+  .site-navigation ul {
+    gap: 0.75rem;
+  }
+
+  .theme-control {
+    order: 2;
+  }
+}
+
+/* Anchor jumps are immediate and the interface has no animation or transitions. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

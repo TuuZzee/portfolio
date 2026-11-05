@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets';
+
+import portrait from '../assets/profile-face-400w.png';
+---
+
+<Image
+  src={portrait}
+  alt="Portrait of Guillaume Becker"
+  widths={[240, 320, 400]}
+  sizes="(min-width: 48rem) 320px, (min-width: 24rem) 280px, 240px"
+  width={400}
+  height={354}
+  loading="eager"
+  fetchpriority="high"
+  class="profile-portrait"
+/>

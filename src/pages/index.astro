@@ -1,12 +1,41 @@
 ---
+import ProfilePortrait from '../components/ProfilePortrait.astro';
+import SectionContainer from '../components/SectionContainer.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { sections } from '../data/sections';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Guillaume Becker" description="Guillaume Becker's personal portfolio.">
-  <main class="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-    <h1 class="border-l-4 border-accent pl-4 text-3xl font-semibold tracking-tight">
-      Guillaume Becker
-    </h1>
-    <p class="mt-6 max-w-prose text-lg text-muted">Personal portfolio in progress.</p>
+  <SiteHeader />
+  <main id="main-content" tabindex="-1" class="site-container">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div>
+        <p class="mb-5 text-sm font-semibold tracking-widest text-interactive uppercase">
+          Personal portfolio
+        </p>
+        <h1
+          id="hero-heading"
+          class="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl"
+        >
+          Guillaume Becker
+        </h1>
+        <p class="mt-6 max-w-prose text-lg text-muted">
+          A space for my work, experience and interests.
+        </p>
+        <a href="#work" class="primary-link mt-8">Selected work <span aria-hidden="true">↗</span></a
+        >
+      </div>
+      <ProfilePortrait />
+    </section>
+    {
+      sections.map(({ id, title, placeholder }) => (
+        <SectionContainer id={id} title={title}>
+          <p>{placeholder}</p>
+        </SectionContainer>
+      ))
+    }
   </main>
+  <SiteFooter />
 </BaseLayout>

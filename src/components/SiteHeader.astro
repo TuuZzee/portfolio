@@ -1,0 +1,22 @@
+---
+import { sections } from '../data/sections';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="site-header">
+  <div class="site-container header-content">
+    <a href="#top" class="site-name">Guillaume Becker<span aria-hidden="true">.</span></a>
+    <ThemeToggle />
+    <nav aria-label="Main" class="site-navigation">
+      <ul>
+        {
+          sections.map(({ id, navigationLabel }) => (
+            <li>
+              <a href={`#${id}`}>{navigationLabel}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

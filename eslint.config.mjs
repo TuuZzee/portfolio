@@ -7,7 +7,16 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
-  globalIgnores(['dist/**', '.astro/**', '.private/**', '.pnpm-store/**']),
+  globalIgnores([
+    'dist/**',
+    '.astro/**',
+    '.private/**',
+    '.pnpm-store/**',
+    'test-results/**',
+    'playwright-report/**',
+    'playwright/.cache/**',
+    '.playwright/**',
+  ]),
   { files: ['**/*.{js,mjs,ts,astro}'], extends: [js.configs.recommended] },
   {
     files: ['**/*.ts'],

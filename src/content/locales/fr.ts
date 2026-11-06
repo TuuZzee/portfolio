@@ -13,7 +13,7 @@ export const frenchContent = {
     discipline: 'Ingénierie logicielle',
     heading: 'Responsable d’ingénierie & architecte logiciel',
     introduction:
-      'Je suis ingénieur logiciel basé à Séoul, avec plus de 11 ans d’expérience dans le développement de produits web, la direction d’équipes frontend et l’amélioration des plateformes qui les soutiennent. J’affectionne tout particulièrement le travaille sur l’architecture et les pratiques d’ingénierie tout en restant impliqué dans le code et les systèmes.',
+      'Je suis ingénieur logiciel basé à Séoul, avec plus de 11 ans d’expérience dans le développement de produits web, la direction d’équipes frontend et l’amélioration des plateformes qui les soutiennent. J’aime particulièrement travailler sur l’architecture et les pratiques d’ingénierie tout en restant impliqué dans le développement.',
     action: 'Découvrir mes projets',
   },
   sections: {

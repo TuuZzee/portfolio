@@ -71,7 +71,10 @@ This repository contains a small, public-facing personal portfolio website. Opti
   pnpm run check
   pnpm run build
   pnpm run test
+  pnpm run test:e2e
   ```
 
 - Report what changed, what was actually tested, and what remains unverified. Do not claim a hosted deployment or CI run passed unless it was observed.
+- Browser smoke tests use Playwright Chromium against the production build on loopback port 4173. Build before `test:e2e`, or use `pnpm run validate`. Keep the Node tests separate, preserve both language routes and do not substitute dev-server results for production verification.
+- Keep browser artifacts and caches ignored. Do not commit screenshots, traces, reports, audit output or private source files. Inspect Git identity metadata as well as file contents before public release, and never rewrite history without explicit authorization.
 - Do not commit, push, merge, or modify remote settings unless explicitly instructed.

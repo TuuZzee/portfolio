@@ -20,3 +20,9 @@ dist/
 
 # Local planning documents are not part of the public source.
 /docs/
+
+# Local browser-test output and caches.
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/.playwright/

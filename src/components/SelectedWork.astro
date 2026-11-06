@@ -1,8 +1,13 @@
 ---
 import { experience } from '../content/facts';
-import { selectedWork } from '../content/locales/en';
+import type { PortfolioContent } from '../content/schema';
 
-const stories = selectedWork.map((story) => {
+interface Props {
+  content: PortfolioContent;
+}
+const { content } = Astro.props;
+
+const stories = content.selectedWork.map((story) => {
   const employer = experience.find(({ id }) => id === story.employerId);
   if (!employer) {
     throw new Error(`Unknown employer for selected work: ${story.id}`);

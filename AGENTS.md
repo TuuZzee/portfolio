@@ -11,8 +11,9 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Use Tailwind CSS 4 for styling, with semantic design tokens in `src/styles/global.css`.
 - Prefer `.astro` components and HTML over hydrated client frameworks. Add browser JavaScript only when interaction requires it.
 - Use small, focused components. Keep reusable layout components under `src/layouts/` or `src/components/`, and pages under `src/pages/`.
-- Keep employer identity, role IDs, dates, locations and public URLs in `src/content/facts.ts`, with English presentation text in `src/content/locales/en.ts` and contracts in `src/content/schema.ts`. Do not duplicate chronological facts in prose or components.
-- Keep stable section IDs in `src/data/sections.ts`, with navigation labels and section titles drawn from the English content. No translation routes or placeholder locales should be added without a request.
+- Keep employer identity, role IDs, dates, locations, technology names and public URLs in `src/content/facts.ts`. Keep English/French presentation text in `src/content/locales/`, with common contracts in `src/content/schema.ts` and lookup in `src/content/index.ts`. Do not duplicate chronological facts in prose or components.
+- Keep stable section IDs in `src/data/sections.ts`, with localized navigation labels and titles supplied through typed props. English and French share `PortfolioPage.astro` and UI components. Do not add placeholder locales or duplicate page markup.
+- Use Astro's native i18n routing with English at the default root and French at `/fr/`. Localize controls, dates, alt text and metadata, and keep canonical/alternate URLs compatible with the configured base path. Preserve approved English wording and require editorial review for new translations.
 - Do not add a backend, API, CMS, state-management library, or runtime icon bundle without a concrete technical need.
 - Use Tabler SVG icons selectively, with accessible names when an icon conveys meaning.
 
@@ -24,7 +25,7 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Use semantic landmarks, a logical heading order, native controls, descriptive link text, and meaningful image alt text.
 - Keep navigation and interactive elements usable on small screens and with a keyboard.
 - Experience summaries, roles and dates must remain visible outside native `<details>` disclosures. Start disclosures collapsed, retain clear state affordances and keyboard focus, and keep interactive links/buttons out of `<summary>`.
-- In visitor-facing prose, prefer plain English and avoid em dashes and semicolons. This rule does not apply to programming syntax.
+- In visitor-facing prose, use natural language appropriate to the locale and avoid em dashes and semicolons. This rule does not apply to programming syntax.
 
 ## TypeScript and code conventions
 
@@ -69,6 +70,7 @@ This repository contains a small, public-facing personal portfolio website. Opti
   pnpm run lint
   pnpm run check
   pnpm run build
+  pnpm run test
   ```
 
 - Report what changed, what was actually tested, and what remains unverified. Do not claim a hosted deployment or CI run passed unless it was observed.

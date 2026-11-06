@@ -25,5 +25,10 @@ export default defineConfig({
   site,
   base,
   trailingSlash: 'always',
+  i18n: {
+    locales: ['en', 'fr'],
+    defaultLocale: 'en',
+    routing: { prefixDefaultLocale: false },
+  },
   vite: { plugins: [tailwindcss()] },
 });

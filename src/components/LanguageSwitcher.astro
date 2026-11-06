@@ -1,0 +1,49 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+import type { PortfolioContent } from '../content/schema';
+import { locales } from '../content/schema';
+
+interface Props {
+  content: PortfolioContent;
+}
+const { content } = Astro.props;
+---
+
+<nav class="language-switcher" aria-label={content.ui.languageNavigation}>
+  {
+    locales.map((locale) => (
+      <a
+        href={getRelativeLocaleUrl(locale)}
+        hreflang={locale}
+        aria-label={content.ui.languageLabels[locale]}
+        aria-current={content.locale === locale ? 'page' : undefined}
+        data-language-link
+      >
+        {locale.toUpperCase()}
+      </a>
+    ))
+  }
+</nav>
+
+<script>
+  import { languageHash } from '../utils/languageHash';
+
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-language-link]');
+  function updateLinks() {
+    const current = document.querySelector<HTMLAnchorElement>(
+      '.site-navigation a[aria-current="location"]',
+    );
+    const hash = languageHash(current?.hash ?? window.location.hash);
+    links.forEach((link) => {
+      link.hash = hash;
+    });
+  }
+  updateLinks();
+  window.addEventListener('hashchange', updateLinks);
+  links.forEach((link) => {
+    link.addEventListener('focus', updateLinks);
+    link.addEventListener('pointerdown', updateLinks);
+    link.addEventListener('click', updateLinks);
+  });
+</script>

@@ -1,19 +1,27 @@
 ---
 import { profile } from '../content/facts';
-import { sections } from '../data/sections';
+import type { PortfolioContent } from '../content/schema';
+import { sectionIds } from '../data/sections';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+interface Props {
+  content: PortfolioContent;
+}
+const { content } = Astro.props;
 ---
 
 <header class="site-header">
   <div class="site-container header-content">
     <a href="#top" class="site-name">{profile.name}<span aria-hidden="true">.</span></a>
-    <ThemeToggle />
-    <nav aria-label="Main" class="site-navigation">
+    <div class="header-controls">
+      <LanguageSwitcher content={content} /><ThemeToggle content={content} />
+    </div>
+    <nav aria-label={content.ui.mainNavigation} class="site-navigation">
       <ul>
         {
-          sections.map(({ id, navigationLabel }) => (
+          sectionIds.map((id) => (
             <li>
-              <a href={`#${id}`}>{navigationLabel}</a>
+              <a href={`#${id}`}>{content.sections[id].navigationLabel}</a>
             </li>
           ))
         }

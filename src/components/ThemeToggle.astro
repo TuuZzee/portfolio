@@ -1,9 +1,15 @@
 ---
+import type { PortfolioContent } from '../content/schema';
+
+interface Props {
+  content: PortfolioContent;
+}
+const { content } = Astro.props;
 // Tabler Icons (MIT): attribution is retained in public/tabler-icons-LICENSE.txt.
 const themes = [
   {
     value: 'system',
-    label: 'Use system theme',
+    label: content.ui.themeLabels.system,
     paths: [
       'M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10',
       'M7 20h10',
@@ -13,7 +19,7 @@ const themes = [
   },
   {
     value: 'light',
-    label: 'Use light theme',
+    label: content.ui.themeLabels.light,
     paths: [
       'M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0',
       'M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7',
@@ -21,13 +27,13 @@ const themes = [
   },
   {
     value: 'dark',
-    label: 'Use dark theme',
+    label: content.ui.themeLabels.dark,
     paths: ['M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008'],
   },
 ] as const;
 ---
 
-<div class="theme-control" role="group" aria-label="Theme selection">
+<div class="theme-control" role="group" aria-label={content.ui.themeGroup}>
   {
     themes.map(({ value, label, paths }) => (
       <button

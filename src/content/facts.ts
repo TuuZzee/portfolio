@@ -1,8 +1,41 @@
 import type { EducationFact, ExperienceFact } from './schema';
 
+export const locations = {
+  seoul: 'Seoul, South Korea',
+  france: 'France',
+  toulouseParis: 'Toulouse/Paris, France',
+} as const;
+export type Location = (typeof locations)[keyof typeof locations];
+
+export const technologies = {
+  typescript: 'TypeScript',
+  javascript: 'JavaScript',
+  react: 'React',
+  next: 'Next.js',
+  redux: 'Redux Toolkit',
+  rtk: 'RTK Query',
+  tailwind: 'Tailwind CSS',
+  storybook: 'Storybook',
+  chromatic: 'Chromatic',
+  actions: 'GitHub Actions',
+  cicd: 'CI/CD',
+  playwright: 'Playwright',
+  jest: 'Jest',
+  testingLibrary: 'React Testing Library',
+  node: 'Node.js',
+  python: 'Python',
+  fastapi: 'FastAPI',
+  sql: 'SQL/PostgreSQL',
+  aws: 'AWS',
+  cloudflare: 'Cloudflare',
+  docker: 'Docker',
+  vercel: 'Vercel',
+  sentry: 'Sentry',
+} as const;
+
 export const profile = {
   name: 'Guillaume Becker',
-  location: 'Seoul, South Korea',
+  location: locations.seoul,
 } as const;
 
 export const publicLinks = {
@@ -47,7 +80,7 @@ export const experience = [
   {
     id: 'earlier',
     company: 'Earlier experience',
-    location: 'France',
+    location: locations.france,
     roles: [{ id: 'earlierEngineer', start: '2011', end: '2014' }],
   },
 ] as const satisfies readonly ExperienceFact[];
@@ -60,7 +93,7 @@ export const education = [
   {
     id: 'epitech',
     institution: 'EPITECH Institute of Technology',
-    location: 'Toulouse/Paris, France',
+    location: locations.toulouseParis,
     start: '2014',
   },
   {

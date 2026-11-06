@@ -1,5 +1,12 @@
-import type { EducationId, ExperienceId, RoleId } from '../facts';
-import type { EducationCopy, ExperienceCopy, SelectedWork, SkillGroup } from '../schema';
+import type { EducationId, ExperienceId, RoleId } from '../facts.ts';
+import { locations, technologies } from '../facts.ts';
+import type {
+  EducationCopy,
+  ExperienceCopy,
+  PortfolioContent,
+  SelectedWork,
+  SkillGroup,
+} from '../schema';
 
 export const en = {
   metadata: {
@@ -139,26 +146,26 @@ export const skillGroups = [
     id: 'frontend',
     title: 'Frontend & Platform',
     items: [
-      'TypeScript',
-      'JavaScript',
-      'React',
-      'Next.js',
-      'Redux Toolkit',
-      'RTK Query',
-      'Tailwind CSS',
-      'Storybook',
-      'Chromatic',
+      technologies.typescript,
+      technologies.javascript,
+      technologies.react,
+      technologies.next,
+      technologies.redux,
+      technologies.rtk,
+      technologies.tailwind,
+      technologies.storybook,
+      technologies.chromatic,
     ],
   },
   {
     id: 'quality',
     title: 'Engineering Quality & Delivery',
     items: [
-      'GitHub Actions',
-      'CI/CD',
-      'Playwright',
-      'Jest',
-      'React Testing Library',
+      technologies.actions,
+      technologies.cicd,
+      technologies.playwright,
+      technologies.jest,
+      technologies.testingLibrary,
       'Release processes',
       'Engineering standards',
       'Monitoring',
@@ -169,11 +176,11 @@ export const skillGroups = [
     title: 'Backend & Applied AI',
     note: 'Python, FastAPI and LLM integration are recent hands-on work and exploration.',
     items: [
-      'Node.js',
-      'Python',
-      'FastAPI',
+      technologies.node,
+      technologies.python,
+      technologies.fastapi,
       'REST APIs',
-      'SQL/PostgreSQL',
+      technologies.sql,
       'LLM integration',
       'Structured outputs',
       'AI-assisted engineering',
@@ -182,7 +189,13 @@ export const skillGroups = [
   {
     id: 'cloud',
     title: 'Cloud & Infrastructure',
-    items: ['AWS', 'Cloudflare', 'Docker', 'Vercel', 'Sentry'],
+    items: [
+      technologies.aws,
+      technologies.cloudflare,
+      technologies.docker,
+      technologies.vercel,
+      technologies.sentry,
+    ],
   },
 ] satisfies readonly SkillGroup[];
 
@@ -191,3 +204,32 @@ export const educationCopy = {
   epitech: { title: "Master's degree in Computer Science" },
   chungAng: { title: 'Exchange program' },
 } as const satisfies Record<EducationId, EducationCopy>;
+
+export const englishContent = {
+  ...en,
+  locale: 'en',
+  metadata: { ...en.metadata, ogLocale: 'en_US' },
+  experienceDetails: { ...en.experienceDetails, forCompany: 'for' },
+  ui: {
+    skipLink: 'Skip to content',
+    mainNavigation: 'Main',
+    themeGroup: 'Theme selection',
+    themeLabels: { system: 'Use system theme', light: 'Use light theme', dark: 'Use dark theme' },
+    backToTop: 'Back to top',
+    portraitAlt: 'Portrait of Guillaume Becker',
+    languageNavigation: 'Language',
+    languageLabels: { en: 'Read in English', fr: 'Read in French' },
+  },
+  dateSeparator: 'to',
+  earlierExperienceLabel: 'Earlier experience',
+  locationLabels: {
+    [locations.seoul]: locations.seoul,
+    [locations.france]: locations.france,
+    [locations.toulouseParis]: locations.toulouseParis,
+  },
+  selectedWork,
+  roleTitles,
+  experienceCopy,
+  skillGroups,
+  educationCopy,
+} as const satisfies PortfolioContent;

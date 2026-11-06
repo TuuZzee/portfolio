@@ -1,5 +1,3 @@
-import { en } from '../content/locales/en';
-
 export const sectionIds = [
   'about',
   'work',
@@ -9,5 +7,3 @@ export const sectionIds = [
   'contact',
 ] as const;
 export type SectionId = (typeof sectionIds)[number];
-
-export const sections = sectionIds.map((id) => ({ id, ...en.sections[id] }));

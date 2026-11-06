@@ -1,20 +1,22 @@
 ---
-import type { CareerDate } from '../content/schema';
+import type { CareerDate, Locale } from '../content/schema';
 import { formatDate } from '../utils/formatDate';
 
 interface Props {
   start: CareerDate;
   end?: CareerDate;
+  locale: Locale;
+  separator: string;
 }
 
-const { start, end } = Astro.props;
+const { start, end, locale, separator } = Astro.props;
 ---
 
-<time datetime={start}>{formatDate(start)}</time>{
+<time datetime={start}>{formatDate(start, locale)}</time>{
   end && (
     <>
-      {' to '}
-      <time datetime={end}>{formatDate(end)}</time>
+      {' '}
+      {separator} <time datetime={end}>{formatDate(end, locale)}</time>
     </>
   )
 }

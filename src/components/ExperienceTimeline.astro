@@ -1,27 +1,37 @@
 ---
 import { experience } from '../content/facts';
-import { en, experienceCopy, roleTitles } from '../content/locales/en';
+import type { PortfolioContent } from '../content/schema';
 import type { ExperienceCopy } from '../content/schema';
 import DateRange from './DateRange.astro';
+interface Props {
+  content: PortfolioContent;
+}
+const { content } = Astro.props;
 ---
 
 <ol class="experience-timeline">
   {
     experience.map((entry) => {
-      const copy: ExperienceCopy = experienceCopy[entry.id];
+      const copy: ExperienceCopy = content.experienceCopy[entry.id];
+      const company = entry.id === 'earlier' ? content.earlierExperienceLabel : entry.company;
       return (
         <li class="experience-entry">
           <article aria-labelledby={`company-${entry.id}`}>
             <h3 id={`company-${entry.id}`} class="text-lg font-semibold text-text">
-              {entry.company}
+              {company}
             </h3>
-            <p class="mt-1 text-sm">{entry.location}</p>
+            <p class="mt-1 text-sm">{content.locationLabels[entry.location]}</p>
             <ul class="mt-4 space-y-4">
               {entry.roles.map((role) => (
                 <li>
-                  <p class="font-medium text-text">{roleTitles[role.id]}</p>
+                  <p class="font-medium text-text">{content.roleTitles[role.id]}</p>
                   <p class="mt-1 text-sm">
-                    <DateRange start={role.start} end={role.end} />
+                    <DateRange
+                      start={role.start}
+                      end={role.end}
+                      locale={content.locale}
+                      separator={content.dateSeparator}
+                    />
                   </p>
                 </li>
               ))}
@@ -30,9 +40,12 @@ import DateRange from './DateRange.astro';
             {copy.details && copy.details.length > 0 && (
               <details name="experience-details" class="experience-details mt-3">
                 <summary>
-                  <span class="details-show">{en.experienceDetails.show}</span>
-                  <span class="details-hide">{en.experienceDetails.hide}</span>
-                  <span class="sr-only"> for {entry.company}</span>
+                  <span class="details-show">{content.experienceDetails.show}</span>
+                  <span class="details-hide">{content.experienceDetails.hide}</span>
+                  <span class="sr-only">
+                    {' '}
+                    {content.experienceDetails.forCompany} {company}
+                  </span>
                 </summary>
                 <ul class="list-disc space-y-3 pb-2 pl-5">
                   {copy.details.map((detail) => (

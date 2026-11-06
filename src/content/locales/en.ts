@@ -23,8 +23,8 @@ export const en = {
     contact: { title: 'Get in touch', navigationLabel: 'Contact' },
   },
   about: [
-    "My background covers industrial SaaS, IoT, language learning, and fintech. I've worked across product development, frontend architecture, team leadership, and developer experience - from modernizing existing applications to building shared foundations for new products.",
-    "I like helping teams make practical technical decisions, improving the way software is built and maintained, and staying involved in implementation. Recently, I've also been exploring Python, FastAPI, and applied AI workflows.",
+    "My background covers industrial SaaS, IoT, language learning, and fintech. I've worked across product development, frontend architecture, team leadership and developer experience. From modernizing existing applications to building shared foundations for new products.",
+    "I enjoy helping teams make practical technical decisions, improving the way software is built and maintained, and staying involved in implementation. Recently, I've also been exploring Python, FastAPI, and applied AI workflows.",
   ],
   contact:
     "If you'd like to talk about engineering leadership, frontend architecture, or software projects, you can reach out through LinkedIn.",
@@ -39,7 +39,7 @@ export const selectedWork = [
     title: 'Modernizing a frontend without pausing delivery',
     context: 'Frontend architecture',
     summary:
-      'Helped move a legacy React application toward a modular Next.js frontend platform. The migration was designed to let old and new pages coexist, so the team could improve the architecture while continuing product development.',
+      'Led the migration of a legacy React application toward a modular Next.js frontend platform. The migration was designed to let old and new pages coexist, so the team could improve the architecture while continuing product development.',
   },
   {
     id: 'foundations',
@@ -47,7 +47,7 @@ export const selectedWork = [
     title: 'Building reusable frontend foundations',
     context: 'Industrial software',
     summary:
-      'Helped establish a frontend platform for manufacturing sustainability workflows, with separate admin and customer applications that share domain features and common infrastructure.',
+      'Established a frontend platform for manufacturing sustainability workflows, with separate admin and customer applications that share domain features and common infrastructure.',
   },
   {
     id: 'practices',
@@ -78,15 +78,15 @@ export const experienceCopy = {
       'Assessed legacy frontend applications and drove a phased migration toward a modular React/Next.js workspace alongside ongoing product delivery.',
       'Helped establish shared foundations for customer and admin manufacturing applications, including reusable domain modules and authentication/API infrastructure.',
       'Improved architecture documentation, development standards, review practices, testing foundations and CI/CD automation in collaboration with Product, Design, QA and backend teams.',
+      'Established frontend governance through ADRs, coding standards, onboarding frameworks, review processes, release practices and architecture guidelines adopted across the engineering organization.',
+      'Explored Applied AI opportunities through technical research and proof-of-concepts, including AI-assisted development workflows and automation for manufacturing sustainability applications.',
+      'Led and supported security and compliance initiatives across SOC2/ISO 27001/TISAX frameworks.',
     ],
   },
   gofluent: {
     summary:
-      'Worked across internal web applications, frontend architecture recommendations, and improvements to delivery and deployment workflows.',
-    details: [
-      'Worked on internal web applications and shared frontend concerns.',
-      'Reviewed frontend architecture and helped improve build, deployment and authentication workflows.',
-    ],
+      'Worked across internal web and mobile applications, frontend architecture recommendations, and improvements to delivery and deployment workflows.',
+    details: [],
   },
   awair: {
     summary:
@@ -116,9 +116,7 @@ export const experienceCopy = {
   earlier: {
     summary:
       'Worked on web and backend projects at Webedia and Yoopies while completing my degree.',
-    details: [
-      'Contributed to web and backend development at Webedia and Yoopies while studying, using PHP, Symfony and JavaScript.',
-    ],
+    details: [],
   },
 } as const satisfies Record<ExperienceId, ExperienceCopy>;
 

@@ -23,7 +23,7 @@ export const en = {
     contact: { title: 'Get in touch', navigationLabel: 'Contact' },
   },
   about: [
-    "My background covers industrial SaaS, IoT, language learning, and fintech. I've worked across product development, frontend architecture, team leadership and developer experience. From modernizing existing applications to building shared foundations for new products.",
+    "My background covers industrial SaaS, IoT, language learning, and fintech. I've worked across product development, frontend architecture, team leadership and developer experience, including modernizing existing applications and building shared foundations for new products.",
     "I enjoy helping teams make practical technical decisions, improving the way software is built and maintained, and staying involved in implementation. Recently, I've also been exploring Python, FastAPI, and applied AI workflows.",
   ],
   contact:

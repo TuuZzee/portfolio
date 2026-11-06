@@ -198,12 +198,7 @@
     color: var(--interactive);
   }
 
-  body:has(#about:target) .site-navigation a[href='#about'],
-  body:has(#work:target) .site-navigation a[href='#work'],
-  body:has(#experience:target) .site-navigation a[href='#experience'],
-  body:has(#skills:target) .site-navigation a[href='#skills'],
-  body:has(#education:target) .site-navigation a[href='#education'],
-  body:has(#contact:target) .site-navigation a[href='#contact'] {
+  .site-navigation a[aria-current='location'] {
     border-color: var(--accent);
     color: var(--interactive);
   }

@@ -1,21 +1,4 @@
-License scope
-=============
-
-The MIT license below applies to this repository's source code, including its
-components, templates, styles, scripts, tests and configuration.
-
-Original biographical content and career descriptions are excluded from this
-grant, including their English/French versions in src/content/ and any copies
-embedded in source code or generated pages. The personal portrait at
-src/assets/profile-face-400w.png and all generated variants are also excluded.
-All rights to these excluded materials are reserved by their respective owners.
-Their presence in this repository does not grant permission to reuse them.
-
-Third-party materials retain their own licenses. Tabler icons remain subject to
-the separate notice in public/tabler-icons-LICENSE.txt.
-
 MIT License
-===========
 
 Copyright (c) 2026 Guillaume Becker
 

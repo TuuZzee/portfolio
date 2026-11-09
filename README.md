@@ -47,7 +47,7 @@ Use `pnpm run format` to apply formatting. Individual checks are available in `p
 
 [PR checks](.github/workflows/checks-pr-draft-main.yml) run for non-draft pull requests targeting `main`. [Pages deployment](.github/workflows/deploy.yml) runs manually from **Actions → Deploy to GitHub Pages**, using `main`, after repeating all checks. Pushes trigger neither workflow.
 
-Before publishing, select **GitHub Actions** in **Settings → Pages** and allow the `github-pages` environment to deploy from `main`. Leave deployment untriggered until publication is approved.
+Publication, deployment and changes to repository visibility or Pages settings require explicit owner approval. When authorized, select **GitHub Actions** in **Settings → Pages** and allow the `github-pages` environment to deploy from `main`.
 
 Initial hosting uses `https://tuuzzee.github.io/portfolio/`, with French at `/portfolio/fr/`. No custom domain or DNS configuration is needed. Leave `SITE_URL` and `BASE_PATH` unset locally and in repository Actions variables for the initial deployment.
 
@@ -68,4 +68,4 @@ Treat source and built assets as public. Keep private documents and personal con
 
 The development-only `minimatch@10.2.6` denial-of-service advisory ([GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)) is temporarily accepted for launch. It affects linting dependencies, with no identified visitor-facing runtime exposure. Keep the advisory visible and revisit when a compatible upstream fix is available.
 
-Source code uses the [MIT license](LICENSE). Original biographical content, career descriptions and the personal portrait are excluded from that grant. [Tabler's separate license](public/tabler-icons-LICENSE.txt) remains in effect for its icons.
+Source code uses the [MIT license](LICENSE). See [NOTICE.md](NOTICE.md) for exclusions covering original biographical content, career descriptions and the personal portrait. [Tabler's separate license](public/tabler-icons-LICENSE.txt) remains in effect for its icons.

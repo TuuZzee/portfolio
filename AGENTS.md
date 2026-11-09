@@ -41,10 +41,10 @@ This repository contains a small, public-facing personal portfolio website. Opti
 ## Routing, assets, and deployment
 
 - The site is statically built for GitHub Pages. Its `site` and `base` default to repository identity through `config/site.mjs`, with validated build-time `SITE_URL` (origin) and `BASE_PATH` overrides. Use the same configuration when building and previewing or running browser tests.
-- Keep internal links, images, favicons, and manifest URLs compatible with both a project base path such as `/portfolio/` and a custom-domain root. Avoid hard-coded root-absolute asset paths.
+- Keep internal links, images, and favicon URLs compatible with both a project base path such as `/portfolio/` and a custom-domain root. Avoid hard-coded root-absolute asset paths.
 - Use Astro's asset handling for images where appropriate and provide stable dimensions to prevent layout shifts.
 - Keep the existing GitHub Actions separation: PR checks in `.github/workflows/checks-pr-draft-main.yml` and manual deployment in `.github/workflows/deploy.yml`.
-- PR checks run only for non-draft pull requests targeting `main`, including when marked ready for review. Deployment is manually triggered from `main` and repeats all quality checks. Leave deployment untriggered while the repository remains private.
+- PR checks run only for non-draft pull requests targeting `main`, including when marked ready for review. Deployment is manually triggered from `main` and repeats all quality checks. Deployment always requires explicit owner approval, regardless of repository visibility.
 - Do not change repository visibility, GitHub settings, Git remotes, deployment configuration, or publish changes without explicit authorization.
 
 ## Public content and privacy
@@ -52,8 +52,8 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Only commit assets and text intended for public distribution. Never include secrets, credentials, unpublished company materials, private notes, or private source documents.
 - Do not publish personal email addresses, phone numbers, `mailto:` links, or a contact form. Use the approved public profile links for contact.
 - Keep private local material out of Git and out of Astro's public output. The `.private/` directory is ignored by Git.
-- Do not publish a resume PDF unless the exact PDF has been approved for public distribution and reviewed for personal contact details.
-- Preserve the `.private/` and `*.pdf` exclusions. Keep resume downloads disabled until an approved public-safe PDF is supplied.
+- Resume downloads are intentionally omitted. Do not add a resume asset or download link without explicit owner approval and review for personal contact details.
+- Preserve the `.private/` and `*.pdf` exclusions.
 - Do not invent professional achievements, customer names, performance metrics, or project outcomes. Keep claims attributable and appropriately scoped.
 - Use only authorized images, icons, and other assets. Preserve attribution and license requirements where applicable.
 - Preserve the approved portrait at `src/assets/profile-face-400w.png`. Do not publish an explicit availability or job-search status line.

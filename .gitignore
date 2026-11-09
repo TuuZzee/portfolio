@@ -15,7 +15,7 @@ dist/
 
 *.log
 
-# No resume PDF is approved for public distribution yet.
+# Resume downloads are intentionally omitted. Keep PDFs out of version control.
 *.pdf
 
 # Local planning documents are not part of the public source.

@@ -5,6 +5,7 @@ import type { PortfolioContent } from '../content/schema';
 interface Props {
   content: PortfolioContent;
 }
+
 const { content } = Astro.props;
 
 const stories = content.selectedWork.map((story) => {

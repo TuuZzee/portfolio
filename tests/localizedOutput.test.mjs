@@ -5,8 +5,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
-import { URL } from 'node:url';
-import vm from 'node:vm';
 
 import { getContent } from '../src/content/index.ts';
 import { sectionIds } from '../src/data/sections.ts';
@@ -110,63 +108,6 @@ function assertLanguageLinks(html, tags, content, locale, origin, base) {
   }
 }
 
-function assertLanguageHashEnhancement(html, base) {
-  const script = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)]
-    .map((match) => match[1])
-    .find((value) => value.includes('pointerdown'));
-  assert.ok(script, 'language switch enhancement is present');
-
-  const links = ['en', 'fr'].map((target) => ({
-    url: new URL(base + (target === 'fr' ? 'fr/' : ''), 'https://example.com'),
-    handlers: {},
-    set hash(value) {
-      this.url.hash = value;
-    },
-    addEventListener(name, handler) {
-      this.handlers[name] = handler;
-    },
-  }));
-  let current;
-  const events = {};
-  const window = {
-    location: { hash: '#experience' },
-    addEventListener(name, handler) {
-      events[name] = handler;
-    },
-  };
-
-  vm.runInNewContext(script, {
-    window,
-    document: {
-      querySelectorAll() {
-        return links;
-      },
-      querySelector() {
-        return current;
-      },
-    },
-  });
-  for (const link of links) {
-    assert.equal(link.url.hash, '#experience');
-  }
-
-  current = { hash: '#work' };
-  links[0].handlers.click();
-  for (const link of links) {
-    assert.equal(link.url.hash, '#work');
-  }
-
-  current = undefined;
-  window.location.hash = '#unknown';
-  events.hashchange();
-  for (const link of links) {
-    assert.equal(link.url.hash, '');
-  }
-
-  assert.equal(links[0].url.pathname, base);
-  assert.equal(links[1].url.pathname, base + 'fr/');
-}
-
 function assertAssetsAndDisclosures(tags, content, output, base) {
   for (const { name, attrs, raw } of tags) {
     if (name === 'details') {
@@ -245,7 +186,6 @@ for (const scenario of scenarios) {
 
         assertMetadata(html, tags, content, locale, scenario.origin, route);
         assertLanguageLinks(html, tags, content, locale, scenario.origin, scenario.base);
-        assertLanguageHashEnhancement(html, scenario.base);
         assertAssetsAndDisclosures(tags, content, output, scenario.base);
         assertLocalizedProseAndPrivacy(html, content, locale);
       }

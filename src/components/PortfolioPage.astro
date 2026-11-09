@@ -8,13 +8,13 @@ import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { getContent } from '../content';
 import { education, profile, publicLinks } from '../content/facts';
-import type { Locale } from '../content/schema';
-import type { EducationFact } from '../content/schema';
+import type { EducationFact, Locale } from '../content/schema';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 interface Props {
   locale: Locale;
 }
+
 const { locale } = Astro.props;
 const content = getContent(locale);
 const { educationCopy, skillGroups } = content;

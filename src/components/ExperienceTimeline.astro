@@ -1,11 +1,12 @@
 ---
 import { experience } from '../content/facts';
-import type { PortfolioContent } from '../content/schema';
-import type { ExperienceCopy } from '../content/schema';
+import type { ExperienceCopy, PortfolioContent } from '../content/schema';
 import DateRange from './DateRange.astro';
+
 interface Props {
   content: PortfolioContent;
 }
+
 const { content } = Astro.props;
 ---
 

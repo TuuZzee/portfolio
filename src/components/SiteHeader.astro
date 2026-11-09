@@ -14,19 +14,21 @@ const { content } = Astro.props;
 
 <header class="site-header">
   <div class="site-container header-content">
-    <a href="#top" class="site-name">{profile.name}<span aria-hidden="true">.</span></a>
+    <a href="#top" class="site-name">
+      {profile.name}
+      <span aria-hidden="true">.</span>
+    </a>
     <div class="header-controls">
-      <LanguageSwitcher content={content} /><ThemeToggle content={content} />
+      <LanguageSwitcher content={content} />
+      <ThemeToggle content={content} />
     </div>
     <nav aria-label={content.ui.mainNavigation} class="site-navigation">
       <ul>
-        {
-          sectionIds.map((id) => (
-            <li>
-              <a href={`#${id}`}>{content.sections[id].navigationLabel}</a>
-            </li>
-          ))
-        }
+        {sectionIds.map((id) => (
+          <li>
+            <a href={`#${id}`}>{content.sections[id].navigationLabel}</a>
+          </li>
+        ))}
       </ul>
     </nav>
   </div>

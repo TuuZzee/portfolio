@@ -49,7 +49,11 @@ const educationEntries: readonly (EducationFact & { title: string })[] = educati
     </section>
 
     <SectionContainer id="about" title={content.sections.about.title}>
-      <div class="space-y-5">{content.about.map((paragraph) => <p>{paragraph}</p>)}</div>
+      <div class="space-y-5">
+        {content.about.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
     </SectionContainer>
 
     <SectionContainer id="work" title={content.sections.work.title}>
@@ -62,51 +66,55 @@ const educationEntries: readonly (EducationFact & { title: string })[] = educati
 
     <SectionContainer id="skills" title={content.sections.skills.title}>
       <ul class="space-y-7">
-        {
-          skillGroups.map(({ id, title, items, note }) => (
-            <li aria-labelledby={`skills-${id}`}>
-              <h3 id={`skills-${id}`} class="font-semibold text-text">
-                {title}
-              </h3>
-              {note && <p class="mt-2 text-sm">{note}</p>}
-              <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-                {items.map((item) => (
-                  <li>{item}</li>
-                ))}
-              </ul>
-            </li>
-          ))
-        }
+        {skillGroups.map(({ id, title, items, note }) => (
+          <li aria-labelledby={`skills-${id}`}>
+            <h3 id={`skills-${id}`} class="font-semibold text-text">
+              {title}
+            </h3>
+            {note && <p class="mt-2 text-sm">{note}</p>}
+            <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+              {items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
       </ul>
     </SectionContainer>
 
     <SectionContainer id="education" title={content.sections.education.title}>
       <ul class="space-y-6">
-        {
-          educationEntries.map(({ institution, location, title, start, end }) => (
-            <li>
-              <h3 class="font-semibold text-text">{institution ?? title}</h3>
-              {institution && <p class="mt-1">{title}</p>}
-              <p class="mt-1 text-sm">
-                <DateRange
-                  start={start}
-                  end={end}
-                  locale={locale}
-                  separator={content.dateSeparator}
-                />
-              </p>
-              {location && <p class="mt-1 text-sm">{content.locationLabels[location]}</p>}
-            </li>
-          ))
-        }
+        {educationEntries.map(({ institution, location, title, start, end }) => (
+          <li>
+            <h3 class="font-semibold text-text">{institution ?? title}</h3>
+            {institution && <p class="mt-1">{title}</p>}
+            <p class="mt-1 text-sm">
+              <DateRange
+                start={start}
+                end={end}
+                locale={locale}
+                separator={content.dateSeparator}
+              />
+            </p>
+            {location && <p class="mt-1 text-sm">{content.locationLabels[location]}</p>}
+          </li>
+        ))}
       </ul>
     </SectionContainer>
 
     <SectionContainer id="contact" title={content.sections.contact.title}>
       <p>{content.contact}</p>
       <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-        <li><a href={publicLinks.linkedin} class="text-link">{content.links.linkedin}</a></li>
-        <li><a href={publicLinks.github} class="text-link">{content.links.github}</a></li>
+        <li>
+          <a href={publicLinks.linkedin} class="text-link">
+            {content.links.linkedin}
+          </a>
+        </li>
+        <li>
+          <a href={publicLinks.github} class="text-link">
+            {content.links.github}
+          </a>
+        </li>
       </ul>
     </SectionContainer>
   </main>

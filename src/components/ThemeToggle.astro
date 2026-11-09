@@ -36,37 +36,35 @@ const themes = [
 ---
 
 <div class="theme-control" role="group" aria-label={content.ui.themeGroup}>
-  {
-    themes.map(({ value, label, paths }) => (
-      <button
-        type="button"
-        class="theme-button"
-        data-theme-option={value}
-        aria-label={label}
-        aria-pressed="false"
-        title={label}
-        disabled
+  {themes.map(({ value, label, paths }) => (
+    <button
+      type="button"
+      class="theme-button"
+      data-theme-option={value}
+      aria-label={label}
+      aria-pressed="false"
+      title={label}
+      disabled
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          {paths.map((d) => (
-            <path d={d} />
-          ))}
-        </svg>
-      </button>
-    ))
-  }
+        {paths.map((d) => (
+          <path d={d} />
+        ))}
+      </svg>
+    </button>
+  ))}
 </div>
 
 <script>

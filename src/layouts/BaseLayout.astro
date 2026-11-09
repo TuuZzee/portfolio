@@ -25,7 +25,9 @@ const alternates = Astro.site
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
-    {alternates.map(({ locale, url }) => <link rel="alternate" hreflang={locale} href={url} />)}
+    {alternates.map(({ locale, url }) => (
+      <link rel="alternate" hreflang={locale} href={url} />
+    ))}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -62,7 +64,9 @@ const alternates = Astro.site
     <title>{title}</title>
   </head>
   <body id="top" class="min-h-screen bg-surface text-text antialiased">
-    <a href="#main-content" class="skip-link">{content.ui.skipLink}</a>
+    <a href="#main-content" class="skip-link">
+      {content.ui.skipLink}
+    </a>
     <slot />
   </body>
 </html>

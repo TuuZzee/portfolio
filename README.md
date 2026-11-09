@@ -11,6 +11,8 @@ pnpm install --frozen-lockfile
 pnpm run dev
 ```
 
+Dependencies must have been published at least 72 hours ago. Installation fails for younger releases or missing publication timestamps, with no package exceptions.
+
 Open `/portfolio/` for English or `/portfolio/fr/` for French at the printed local URL.
 
 ```sh
@@ -47,7 +49,9 @@ Use `pnpm run format` to apply formatting. Individual checks are available in `p
 
 Before publishing, select **GitHub Actions** in **Settings → Pages** and allow the `github-pages` environment to deploy from `main`. Leave deployment untriggered until publication is approved.
 
-Site URLs default to the GitHub repository identity from `GITHUB_REPOSITORY` or Git `origin`, currently `https://tuuzzee.github.io/portfolio/`. Optional build-time overrides support a future custom domain:
+Initial hosting uses `https://tuuzzee.github.io/portfolio/`, with French at `/portfolio/fr/`. No custom domain or DNS configuration is needed. Leave `SITE_URL` and `BASE_PATH` unset locally and in repository Actions variables for the initial deployment.
+
+Site URLs default to the repository identity from `GITHUB_REPOSITORY` or Git `origin`. Optional build-time overrides remain available for a future custom domain:
 
 ```sh
 SITE_URL=https://example.com BASE_PATH=/ pnpm run validate
@@ -56,10 +60,12 @@ SITE_URL=https://example.com BASE_PATH=/ pnpm run preview
 
 `SITE_URL` accepts an HTTP(S) origin without credentials, path, query or fragment. `BASE_PATH` starts with `/` and normalizes trailing slashes. Blank values retain the defaults. Use the same settings for build, preview and browser tests.
 
-The deployment workflow reads these settings from repository Actions variables. Set them before building, since canonical and alternate URLs are generated then. Domain ownership, DNS, Pages settings and HTTPS require separate configuration. Actions publishing needs no tracked `CNAME` file.
+The deployment workflow reads optional overrides from repository Actions variables. For a future domain change, set them before building so canonical and alternate URLs match the new origin.
 
 ## Privacy and attribution
 
-Treat source and built assets as public. Keep private documents, personal contact details and unapproved resumes out of the repository. Review Git history, commit identities and dependency advisories before publication.
+Treat source and built assets as public. Keep private documents and personal contact details out of the repository. Resume downloads are intentionally omitted. Existing Git commit identity metadata is accepted without rewriting history.
 
-[Tabler's license](public/tabler-icons-LICENSE.txt) applies to its icons only. A repository-wide license remains an owner decision.
+The development-only `minimatch@10.2.6` denial-of-service advisory ([GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)) is temporarily accepted for launch. It affects linting dependencies, with no identified visitor-facing runtime exposure. Keep the advisory visible and revisit when a compatible upstream fix is available.
+
+Source code uses the [MIT license](LICENSE). Original biographical content, career descriptions and the personal portrait are excluded from that grant. [Tabler's separate license](public/tabler-icons-LICENSE.txt) remains in effect for its icons.

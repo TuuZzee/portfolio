@@ -11,19 +11,17 @@ const { content } = Astro.props;
 ---
 
 <nav class="language-switcher" aria-label={content.ui.languageNavigation}>
-  {
-    locales.map((locale) => (
-      <a
-        href={getRelativeLocaleUrl(locale)}
-        hreflang={locale}
-        aria-label={content.ui.languageLabels[locale]}
-        aria-current={content.locale === locale ? 'page' : undefined}
-        data-language-link
-      >
-        {locale.toUpperCase()}
-      </a>
-    ))
-  }
+  {locales.map((locale) => (
+    <a
+      href={getRelativeLocaleUrl(locale)}
+      hreflang={locale}
+      aria-label={content.ui.languageLabels[locale]}
+      aria-current={content.locale === locale ? 'page' : undefined}
+      data-language-link
+    >
+      {locale.toUpperCase()}
+    </a>
+  ))}
 </nav>
 
 <script>

@@ -7,6 +7,10 @@ updates:
       time: '09:00'
       timezone: Asia/Seoul
     open-pull-requests-limit: 2
+    ignore:
+      # Remove once astro check and typescript-eslint support TypeScript 7 in this repo.
+      - dependency-name: typescript
+        versions: ['>=7.0.0']
     groups:
       npm-version-updates:
         applies-to: version-updates

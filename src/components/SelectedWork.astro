@@ -18,19 +18,17 @@ const stories = content.selectedWork.map((story) => {
 ---
 
 <ul class="space-y-8">
-  {
-    stories.map(({ id, title, company, context, summary }) => (
-      <li>
-        <article aria-labelledby={`work-${id}`}>
-          <p class="text-sm text-interactive">
-            {company} · {context}
-          </p>
-          <h3 id={`work-${id}`} class="mt-2 text-lg leading-snug font-semibold text-text">
-            {title}
-          </h3>
-          <p class="mt-3">{summary}</p>
-        </article>
-      </li>
-    ))
-  }
+  {stories.map(({ id, title, company, context, summary }) => (
+    <li>
+      <article aria-labelledby={`work-${id}`}>
+        <p class="text-sm text-interactive">
+          {company} · {context}
+        </p>
+        <h3 id={`work-${id}`} class="mt-2 text-lg leading-snug font-semibold text-text">
+          {title}
+        </h3>
+        <p class="mt-3">{summary}</p>
+      </article>
+    </li>
+  ))}
 </ul>

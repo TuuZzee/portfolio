@@ -1,0 +1,54 @@
+name: Dependency security audit
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # First day of each month, 09:00 Asia/Seoul.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Install locked dependencies
+        id: install
+        run: pnpm install --frozen-lockfile
+      - name: Audit production dependencies
+        run: pnpm audit --prod
+      - name: Audit all dependencies for high and critical advisories
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm audit --audit-level high
+      - name: Full audit report
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        # Report lower-severity findings without hiding audit/registry failures.
+        run: |
+          node --input-type=module <<'NODE'
+          import { spawnSync } from 'node:child_process';
+          import process from 'node:process';
+
+          const result = spawnSync('pnpm', ['audit', '--json'], { encoding: 'utf8' });
+          process.stdout.write(result.stdout ?? '');
+          process.stderr.write(result.stderr ?? '');
+
+          const report = JSON.parse(result.stdout);
+          const counts = report.metadata?.vulnerabilities;
+          const severities = ['info', 'low', 'moderate', 'high', 'critical'];
+          if (result.error || report.error || ![0, 1].includes(result.status) ||
+              !counts || !severities.every((key) => Number.isInteger(counts[key]) && counts[key] >= 0) ||
+              (result.status === 1 && !severities.some((key) => counts[key] > 0))) {
+            throw new Error('The full dependency audit did not complete successfully.');
+          }
+          if (counts.high > 0 || counts.critical > 0) process.exit(1);
+          NODE

@@ -2,6 +2,7 @@ import { expect, test as base } from '@playwright/test';
 
 import { readSiteConfig } from '../config/site.mjs';
 import { getContent } from '../src/content';
+import { profile, publicLinks } from '../src/content/facts';
 import { type Locale, locales } from '../src/content/schema';
 import { sectionIds } from '../src/data/sections';
 
@@ -92,6 +93,31 @@ for (const locale of locales) {
     for (const absent of [`${basePath}en/`, `${basePath}ko/`, `${basePath}resume.pdf`]) {
       expect((await request.get(absent)).status()).toBe(404);
     }
+  });
+
+  test(`${locale}: footer links remain visible and keyboard accessible`, async ({ page }) => {
+    await page.goto(path);
+    const footer = page.getByRole('contentinfo');
+    const source = footer.getByRole('link', { name: content.ui.sourceCode, exact: true });
+    const backToTop = footer.getByRole('link', { name: content.ui.backToTop });
+
+    await footer.scrollIntoViewIfNeeded();
+    await expect(footer).toContainText(`© ${new Date().getUTCFullYear()} ${profile.name}`);
+    await expect(source).toBeVisible();
+    await expect(source).toHaveAttribute('href', publicLinks.source);
+    await expect(backToTop).toHaveAttribute('href', '#top');
+    await expect(
+      page.locator('#contact').getByRole('link', { name: content.links.github, exact: true }),
+    ).toHaveAttribute('href', publicLinks.github);
+
+    await source.focus();
+    await expect(source).toBeFocused();
+    expect(await source.evaluate((link) => getComputedStyle(link).outlineStyle)).not.toBe('none');
+    await page.keyboard.press('Tab');
+    await expect(backToTop).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/#top$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
   test(`${locale}: active navigation follows reading position and clears a stale Contact hash`, async ({
@@ -224,6 +250,12 @@ for (const locale of locales) {
         expect(
           await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
         ).toBe(true);
+        const footer = page.getByRole('contentinfo');
+        await footer.scrollIntoViewIfNeeded();
+        await expect(
+          footer.getByRole('link', { name: content.ui.sourceCode, exact: true }),
+        ).toBeInViewport();
+        await expect(footer.getByRole('link', { name: content.ui.backToTop })).toBeInViewport();
       }
     }
 

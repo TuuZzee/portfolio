@@ -42,6 +42,7 @@ export const frenchContent = {
       dark: 'Utiliser le thème sombre',
     },
     backToTop: 'Retour en haut',
+    sourceCode: 'Code source',
     portraitAlt: 'Portrait de Guillaume Becker',
     languageNavigation: 'Langue',
     languageLabels: { en: 'Lire en anglais', fr: 'Lire en français' },

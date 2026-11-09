@@ -216,6 +216,7 @@ export const englishContent = {
     themeGroup: 'Theme selection',
     themeLabels: { system: 'Use system theme', light: 'Use light theme', dark: 'Use dark theme' },
     backToTop: 'Back to top',
+    sourceCode: 'Source code',
     portraitAlt: 'Portrait of Guillaume Becker',
     languageNavigation: 'Language',
     languageLabels: { en: 'Read in English', fr: 'Read in French' },

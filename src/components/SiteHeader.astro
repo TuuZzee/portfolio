@@ -4,9 +4,11 @@ import type { PortfolioContent } from '../content/schema';
 import { sectionIds } from '../data/sections';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+
 interface Props {
   content: PortfolioContent;
 }
+
 const { content } = Astro.props;
 ---
 

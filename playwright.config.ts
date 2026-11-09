@@ -1,6 +1,13 @@
 import process from 'node:process';
 import { defineConfig } from '@playwright/test';
 
+import { readSiteConfig } from './config/site.mjs';
+
+// Preview stays on loopback even when production metadata targets a custom origin.
+const { base } = readSiteConfig();
+const basePath = base === '/' ? '/' : `${base}/`;
+const previewURL = `http://127.0.0.1:4173${basePath}`;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -10,7 +17,7 @@ export default defineConfig({
   reporter: 'list',
   outputDir: 'test-results',
   use: {
-    baseURL: 'http://127.0.0.1:4173/portfolio/',
+    baseURL: previewURL,
     browserName: 'chromium',
     colorScheme: 'light',
     trace: 'off',
@@ -27,7 +34,7 @@ export default defineConfig({
   // Build once before this suite. Ignore Astro's agent/background lock so Playwright owns shutdown.
   webServer: {
     command: 'pnpm run preview --host 127.0.0.1 --port 4173 --ignore-lock',
-    url: 'http://127.0.0.1:4173/portfolio/',
+    url: previewURL,
     reuseExistingServer: false,
     timeout: 30_000,
   },

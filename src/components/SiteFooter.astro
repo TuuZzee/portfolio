@@ -2,10 +2,11 @@
 import { profile } from '../content/facts';
 import type { PortfolioContent } from '../content/schema';
 
-const year = new Date().getUTCFullYear();
 interface Props {
   content: PortfolioContent;
 }
+
+const year = new Date().getUTCFullYear();
 const { content } = Astro.props;
 ---
 

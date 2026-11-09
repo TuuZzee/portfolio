@@ -2,6 +2,8 @@
 
 A static English/French portfolio built with Astro, strict TypeScript and Tailwind CSS 4, with responsive navigation, light/dark themes and expandable experience details.
 
+[Live website: English](https://tuuzzee.github.io/portfolio/) · [Site en français](https://tuuzzee.github.io/portfolio/fr/)
+
 ## Development
 
 Use the Node and pnpm versions pinned in `.node-version` and `package.json`.
@@ -45,27 +47,28 @@ Use `pnpm run format` to apply formatting. Individual checks are available in `p
 
 ## Deployment
 
-[PR checks](.github/workflows/checks-pr-draft-main.yml) run for non-draft pull requests targeting `main`. [Pages deployment](.github/workflows/deploy.yml) runs manually from **Actions → Deploy to GitHub Pages**, using `main`, after repeating all checks. Pushes trigger neither workflow.
+The public site is live on GitHub Pages. [PR checks](.github/workflows/checks-pr-draft-main.yml) run for non-draft PRs targeting `main`. [Deployment](.github/workflows/deploy.yml) runs manually from **Actions → Deploy to GitHub Pages**, using `main`, after all checks pass. Deployment and repository/Pages settings changes require owner approval.
 
-Publication, deployment and changes to repository visibility or Pages settings require explicit owner approval. When authorized, select **GitHub Actions** in **Settings → Pages** and allow the `github-pages` environment to deploy from `main`.
-
-Initial hosting uses `https://tuuzzee.github.io/portfolio/`, with French at `/portfolio/fr/`. No custom domain or DNS configuration is needed. Leave `SITE_URL` and `BASE_PATH` unset locally and in repository Actions variables for the initial deployment.
-
-Site URLs default to the repository identity from `GITHUB_REPOSITORY` or Git `origin`. Optional build-time overrides remain available for a future custom domain:
+Leave `SITE_URL` and `BASE_PATH` unset for the current Pages URLs. No custom domain or DNS setup is needed. Future custom domains can use these build-time settings locally or as repository Actions variables:
 
 ```sh
 SITE_URL=https://example.com BASE_PATH=/ pnpm run validate
-SITE_URL=https://example.com BASE_PATH=/ pnpm run preview
 ```
 
-`SITE_URL` accepts an HTTP(S) origin without credentials, path, query or fragment. `BASE_PATH` starts with `/` and normalizes trailing slashes. Blank values retain the defaults. Use the same settings for build, preview and browser tests.
+Use the same settings for build, preview and browser tests so generated metadata matches the site URL.
 
-The deployment workflow reads optional overrides from repository Actions variables. For a future domain change, set them before building so canonical and alternate URLs match the new origin.
+## Dependency maintenance
+
+- [Dependabot](.github/dependabot.yml): monthly version checks at 09:00 Asia/Seoul, grouped by ecosystem, with at most two open version PRs each. Security updates use separate alert-driven groups.
+- [Security audit](.github/workflows/dependency-audit.yml): monthly on day 1 at 09:00 KST (00:00 UTC), or manually. Production advisories, high/critical findings and installation/audit errors fail the run. Lower-severity development findings remain visible.
+- Updates require manual review and passing CI. Automerge is not configured.
+
+The owner must enable **Dependency graph**, **Dependabot alerts**, **Dependabot security updates** and **Grouped security updates**. The audit fallback covers GitHub's [pnpm 12 lockfile detection limitation](https://docs.github.com/en/code-security/reference/supply-chain-security/dependency-graph-supported-package-ecosystems) and can be reconsidered once detection works.
+
+The development-only [minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249) remains temporarily accepted pending a compatible upstream fix.
 
 ## Privacy and attribution
 
-Treat source and built assets as public. Keep private documents and personal contact details out of the repository. Resume downloads are intentionally omitted. Existing Git commit identity metadata is accepted without rewriting history.
+Keep private documents and personal contact details out of source and built assets. Resume downloads are intentionally omitted. Existing Git identity metadata is accepted without rewriting history.
 
-The development-only `minimatch@10.2.6` denial-of-service advisory ([GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)) is temporarily accepted for launch. It affects linting dependencies, with no identified visitor-facing runtime exposure. Keep the advisory visible and revisit when a compatible upstream fix is available.
-
-Source code uses the [MIT license](LICENSE). See [NOTICE.md](NOTICE.md) for exclusions covering original biographical content, career descriptions and the personal portrait. [Tabler's separate license](public/tabler-icons-LICENSE.txt) remains in effect for its icons.
+Source code uses [MIT](LICENSE). [NOTICE.md](NOTICE.md) excludes original biographical content, career descriptions and the portrait. [Tabler's license](public/tabler-icons-LICENSE.txt) applies separately to its icons.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { education, experience, technologies } from '../src/content/facts.ts';
+import { education, experience, publicLinks, technologies } from '../src/content/facts.ts';
 import { getContent } from '../src/content/index.ts';
 import { sectionIds } from '../src/data/sections.ts';
 import { formatDate } from '../src/utils/formatDate.ts';
@@ -62,6 +62,7 @@ test('French content localizes controls and prose without forbidden punctuation'
     'mainNavigation',
     'themeGroup',
     'backToTop',
+    'sourceCode',
     'portraitAlt',
     'languageNavigation',
   ]) {
@@ -89,4 +90,11 @@ test('language switching retains only shared section hashes', () => {
   for (const hash of ['', '#missing', '#fr', 'experience', '#experience?bad']) {
     assert.equal(languageHash(hash), '');
   }
+});
+
+test('source-code labels are translated without changing the Contact profile link', () => {
+  assert.equal(english.ui.sourceCode, 'Source code');
+  assert.equal(french.ui.sourceCode, 'Code source');
+  assert.equal(publicLinks.source, 'https://github.com/TuuZzee/portfolio');
+  assert.equal(publicLinks.github, 'https://github.com/TuuZzee');
 });

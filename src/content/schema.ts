@@ -80,6 +80,7 @@ export interface PortfolioContent {
     readonly themeGroup: string;
     readonly themeLabels: Readonly<Record<'system' | 'light' | 'dark', string>>;
     readonly backToTop: string;
+    readonly sourceCode: string;
     readonly portraitAlt: string;
     readonly languageNavigation: string;
     readonly languageLabels: Readonly<Record<Locale, string>>;

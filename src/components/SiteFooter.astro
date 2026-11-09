@@ -1,5 +1,5 @@
 ---
-import { profile } from '../content/facts';
+import { profile, publicLinks } from '../content/facts';
 import type { PortfolioContent } from '../content/schema';
 
 interface Props {
@@ -13,7 +13,10 @@ const { content } = Astro.props;
 <footer class="border-t border-divider">
   <div class="site-container flex flex-wrap items-center justify-between gap-4 py-8 text-sm">
     <p class="text-muted">© {year} {profile.name}</p>
-    <a href="#top" class="text-link">{content.ui.backToTop} <span aria-hidden="true">↑</span></a>
+    <div class="flex flex-wrap items-center gap-4">
+      <a href={publicLinks.source} class="text-link">{content.ui.sourceCode}</a>
+      <a href="#top" class="text-link">{content.ui.backToTop} <span aria-hidden="true">↑</span></a>
+    </div>
   </div>
   <div data-page-end class="h-px" aria-hidden="true"></div>
 </footer>

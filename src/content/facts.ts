@@ -41,6 +41,7 @@ export const profile = {
 export const publicLinks = {
   linkedin: 'https://www.linkedin.com/in/guillaume-becker',
   github: 'https://github.com/TuuZzee',
+  source: 'https://github.com/TuuZzee/portfolio',
 } as const;
 
 export const experience = [

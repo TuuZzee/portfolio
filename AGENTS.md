@@ -40,7 +40,7 @@ This repository contains a small, public-facing personal portfolio website. Opti
 
 ## Routing, assets, and deployment
 
-- The site is statically built for GitHub Pages. Its `site` and `base` are derived in `astro.config.mjs` from repository identity.
+- The site is statically built for GitHub Pages. Its `site` and `base` default to repository identity through `config/site.mjs`, with validated build-time `SITE_URL` (origin) and `BASE_PATH` overrides. Use the same configuration when building and previewing or running browser tests.
 - Keep internal links, images, favicons, and manifest URLs compatible with both a project base path such as `/portfolio/` and a custom-domain root. Avoid hard-coded root-absolute asset paths.
 - Use Astro's asset handling for images where appropriate and provide stable dimensions to prevent layout shifts.
 - Keep the existing GitHub Actions separation: PR checks in `.github/workflows/checks-pr-draft-main.yml` and manual deployment in `.github/workflows/deploy.yml`.

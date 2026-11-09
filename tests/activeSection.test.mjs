@@ -14,6 +14,7 @@ test('selects the section at the reading line, not the most recently intersectin
     { id: 'about', top: -100, bottom: 400 },
     { id: 'work', top: 400, bottom: 1100 },
   ];
+
   assert.equal(activeSection(sections, position), 'about');
 });
 
@@ -45,18 +46,15 @@ test('fast scroll can skip intervening sections without stale state', () => {
     { id: 'experience', top: -800, bottom: 350 },
     { id: 'skills', top: 350, bottom: 900 },
   ];
+
+  const scrolledAboveSections = sections.map((section) => ({
+    ...section,
+    top: section.top + 3000,
+    bottom: section.bottom + 3000,
+  }));
+
   assert.equal(activeSection(sections, position), 'experience');
-  assert.equal(
-    activeSection(
-      sections.map((section) => ({
-        ...section,
-        top: section.top + 3000,
-        bottom: section.bottom + 3000,
-      })),
-      position,
-    ),
-    undefined,
-  );
+  assert.equal(activeSection(scrolledAboveSections, position), undefined);
 });
 
 test('selects Contact at the page end even if it cannot reach the reading line', () => {
@@ -64,6 +62,7 @@ test('selects Contact at the page end even if it cannot reach the reading line',
     { id: 'education', top: -100, bottom: 200 },
     { id: 'contact', top: 200, bottom: 650 },
   ];
+
   assert.equal(activeSection(sections, position), 'education');
   assert.equal(activeSection(sections, { ...position, atPageEnd: true }), 'contact');
 });
@@ -73,6 +72,7 @@ test('never marks sections that are outside the unobscured viewport', () => {
     { id: 'about', top: -500, bottom: 50 },
     { id: 'contact', top: 900, bottom: 1200 },
   ];
+
   assert.equal(activeSection(sections, position), undefined);
   assert.equal(activeSection(sections, { ...position, atPageEnd: true }), undefined);
 });
@@ -82,6 +82,7 @@ test('uses the resized mobile reading position rather than desktop header geomet
     { id: 'about', top: -300, bottom: 80 },
     { id: 'work', top: 80, bottom: 1000 },
   ];
+
   assert.equal(activeSection(sections, position), 'work');
   assert.equal(
     activeSection(sections, { top: 0, line: 25, viewportHeight: 667, atPageEnd: false }),

@@ -25,7 +25,9 @@ test('both locales cover every section, role, employer and education entry', () 
       Object.keys(content.educationCopy),
       education.map(({ id }) => id),
     );
-    for (const label of Object.values(content.ui.themeLabels)) assert.ok(label.length > 0);
+    for (const label of Object.values(content.ui.themeLabels)) {
+      assert.ok(label.length > 0);
+    }
   }
 });
 
@@ -38,11 +40,14 @@ test('translation preserves story, skill and experience-detail coverage', () => 
     french.skillGroups.map(({ id, items }) => [id, items.length]),
     english.skillGroups.map(({ id, items }) => [id, items.length]),
   );
-  for (const { id } of experience)
+
+  for (const { id } of experience) {
     assert.equal(
       french.experienceCopy[id].details?.length,
       english.experienceCopy[id].details?.length,
     );
+  }
+
   for (const name of Object.values(technologies)) {
     assert.ok(english.skillGroups.some(({ items }) => items.includes(name)));
     assert.ok(french.skillGroups.some(({ items }) => items.includes(name)));
@@ -59,9 +64,12 @@ test('French content localizes controls and prose without forbidden punctuation'
     'backToTop',
     'portraitAlt',
     'languageNavigation',
-  ])
+  ]) {
     assert.notEqual(french.ui[key], english.ui[key]);
-  for (const content of [english, french]) assert.ok(!/[—;]/.test(JSON.stringify(content)));
+  }
+  for (const content of [english, french]) {
+    assert.ok(!/[—;]/.test(JSON.stringify(content)));
+  }
 });
 
 test('dates localize month names without changing year-only precision', () => {
@@ -74,7 +82,11 @@ test('dates localize month names without changing year-only precision', () => {
 });
 
 test('language switching retains only shared section hashes', () => {
-  for (const id of sectionIds) assert.equal(languageHash('#' + id), '#' + id);
-  for (const hash of ['', '#missing', '#fr', 'experience', '#experience?bad'])
+  for (const id of sectionIds) {
+    assert.equal(languageHash('#' + id), '#' + id);
+  }
+
+  for (const hash of ['', '#missing', '#fr', 'experience', '#experience?bad']) {
     assert.equal(languageHash(hash), '');
+  }
 });

@@ -1,35 +1,46 @@
 import { expect, test as base } from '@playwright/test';
 
+import { readSiteConfig } from '../config/site.mjs';
 import { getContent } from '../src/content';
-import { locales } from '../src/content/schema';
+import { type Locale, locales } from '../src/content/schema';
 import { sectionIds } from '../src/data/sections';
+
+const { site, base: configuredBase } = readSiteConfig();
+const basePath = configuredBase === '/' ? '/' : `${configuredBase}/`;
+
+function localeRoute(locale: Locale): string {
+  return `${basePath}${locale === 'fr' ? 'fr/' : ''}`;
+}
 
 // Keep every flow offline except for its loopback production preview.
 const test = base.extend({
   page: async ({ page }, use) => {
-    const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    const browserErrors: string[] = [];
+
+    page.on('pageerror', (error) => browserErrors.push(error.message));
     page.on('console', (message) => {
       if (message.type() === 'error') {
-        errors.push(message.text());
+        browserErrors.push(message.text());
       }
     });
-    page.on('requestfailed', (request) => errors.push(`Failed: ${request.url()}`));
+    page.on('requestfailed', (request) => browserErrors.push(`Failed: ${request.url()}`));
     page.on('response', (response) => {
       if (response.status() >= 400) {
-        errors.push(`HTTP ${response.status()}: ${response.url()}`);
+        browserErrors.push(`HTTP ${response.status()}: ${response.url()}`);
       }
     });
+
     await page.route('**/*', async (route) => {
       if (new URL(route.request().url()).origin !== 'http://127.0.0.1:4173') {
-        errors.push(`Unexpected external request: ${route.request().url()}`);
+        browserErrors.push(`Unexpected external request: ${route.request().url()}`);
         await route.abort();
       } else {
         await route.continue();
       }
     });
     await use(page);
-    expect(errors).toEqual([]);
+
+    expect(browserErrors).toEqual([]);
   },
 });
 
@@ -44,11 +55,9 @@ for (const locale of locales) {
     await expect(page.locator('html')).toHaveAttribute('lang', locale);
     await expect(page).toHaveTitle(content.metadata.title);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(content.hero.heading);
-    const route = `/portfolio/${locale === 'fr' ? 'fr/' : ''}`;
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-      'href',
-      `https://tuuzzee.github.io${route}`,
-    );
+
+    const route = localeRoute(locale);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${site}${route}`);
     await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
       'content',
       content.metadata.ogLocale,
@@ -60,9 +69,10 @@ for (const locale of locales) {
     for (const language of locales) {
       await expect(page.locator(`link[hreflang="${language}"]`)).toHaveAttribute(
         'href',
-        `https://tuuzzee.github.io/portfolio/${language === 'fr' ? 'fr/' : ''}`,
+        `${site}${localeRoute(language)}`,
       );
     }
+
     const portrait = page.getByRole('img', { name: content.ui.portraitAlt });
     await expect(portrait).toBeVisible();
     expect(
@@ -70,6 +80,7 @@ for (const locale of locales) {
         (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
       ),
     ).toBe(true);
+
     const assets = await page
       .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
@@ -77,7 +88,8 @@ for (const locale of locales) {
       expect(asset).toBeTruthy();
       expect((await request.get(asset ?? '')).status()).toBe(200);
     }
-    for (const absent of ['/portfolio/en/', '/portfolio/ko/', '/portfolio/resume.pdf']) {
+
+    for (const absent of [`${basePath}en/`, `${basePath}ko/`, `${basePath}resume.pdf`]) {
       expect((await request.get(absent)).status()).toBe(404);
     }
   });
@@ -88,18 +100,22 @@ for (const locale of locales) {
     await page.goto(`${path}#contact`);
     const current = page.locator('.site-navigation [aria-current="location"]');
     await expect(current).toHaveAttribute('href', '#contact');
+
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(current).toHaveCount(0);
     await expect(page).toHaveURL(/#contact$/);
+
     for (const id of sectionIds) {
       await page.locator(`#${id}`).evaluate((section) => section.scrollIntoView());
       await expect(current).toHaveCount(1);
       await expect(current).toHaveAttribute('href', `#${id}`);
     }
+
     const link = page.locator('.site-navigation a[href="#experience"]');
     await link.focus();
     await page.keyboard.press('Enter');
     await expect(current).toHaveAttribute('href', '#experience');
+
     const heading = page.locator('#experience-heading');
     const unobscured = await heading.evaluate((element) => {
       const header = document.querySelector('header');
@@ -123,6 +139,7 @@ for (const locale of locales) {
       'href',
       '#experience',
     );
+
     const language = page.getByRole('link', {
       name: content.ui.languageLabels[target],
       exact: true,
@@ -130,7 +147,7 @@ for (const locale of locales) {
     await language.focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(
-      new RegExp(`/portfolio/${target === 'fr' ? 'fr/' : ''}#experience$`),
+      (url) => url.pathname === localeRoute(target) && url.hash === '#experience',
     );
     await expect(page.locator('html')).toHaveAttribute('lang', target);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -144,16 +161,19 @@ for (const locale of locales) {
     const dark = page.getByRole('button', { name: content.ui.themeLabels.dark, exact: true });
     await expect(system).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
     await light.focus();
     await page.keyboard.press('Space');
     await expect(light).toHaveAttribute('aria-pressed', 'true');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
     await dark.focus();
     await page.keyboard.press('Enter');
     await expect(dark).toHaveAttribute('aria-pressed', 'true');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
     await system.click();
     await page.emulateMedia({ colorScheme: 'light' });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
@@ -168,13 +188,16 @@ for (const locale of locales) {
     await expect(page.getByRole('link', { name: content.ui.skipLink })).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('main')).toBeFocused();
+
     const entries = page.locator('details');
     await expect(page.locator('details[open]')).toHaveCount(0);
+
     const first = entries.nth(0);
     await first.locator('summary').focus();
     await page.keyboard.press('Space');
     await expect(first).toHaveAttribute('open', '');
     await expect(first.getByText(content.experienceDetails.hide, { exact: true })).toBeVisible();
+
     const second = entries.nth(1);
     await second.locator('summary').focus();
     await page.keyboard.press('Enter');
@@ -192,6 +215,7 @@ for (const locale of locales) {
     await page.goto(path);
     await page.locator('details summary').first().click();
     await expect(page.locator('details').first()).toHaveAttribute('open', '');
+
     for (const width of [320, 375, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       for (const colorScheme of ['light', 'dark'] as const) {
@@ -202,6 +226,7 @@ for (const locale of locales) {
         ).toBe(true);
       }
     }
+
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect
       .poll(() =>

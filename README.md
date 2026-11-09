@@ -63,8 +63,6 @@ Use the same settings for build, preview and browser tests so generated metadata
 - [Security audit](.github/workflows/dependency-audit.yml): monthly on day 1 at 09:00 KST (00:00 UTC), or manually. Production advisories, high/critical findings and installation/audit errors fail the run. Lower-severity development findings remain visible.
 - Updates require manual review and passing CI. Automerge is not configured.
 
-The owner must enable **Dependency graph**, **Dependabot alerts**, **Dependabot security updates** and **Grouped security updates**. The audit fallback covers GitHub's [pnpm 12 lockfile detection limitation](https://docs.github.com/en/code-security/reference/supply-chain-security/dependency-graph-supported-package-ecosystems) and can be reconsidered once detection works.
-
 The development-only [minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249) remains temporarily accepted pending a compatible upstream fix.
 
 ## Privacy and attribution

@@ -80,6 +80,18 @@ export const frenchContent = {
         'Piloté des travaux visant à faciliter l’adoption des pratiques d’ingénierie grâce à une documentation claire, aux revues de code, aux bases de test et aux contrôles automatisés. L’objectif était d’aider les équipes à prendre des décisions cohérentes sans ralentir les livraisons quotidiennes.',
     },
   ],
+  independentProjects: {
+    title: 'Projets personnels',
+    sourceLink: 'Voir le code',
+    projects: {
+      clinicalTrialsExplorer: {
+        title: 'Clinical Trials Explorer',
+        context: 'IA appliquée · Visualisation de données',
+        summary:
+          'Une application expérimentale full-stack permettant d’explorer les données des essais cliniques à travers des questions en langage naturel et des graphiques interactifs. Elle combine l’interprétation des questions par l’IA, l’agrégation déterministe des données et des références aux sources.',
+      },
+    },
+  },
   roleTitles: {
     glassdomeHead: 'Responsable de l’ingénierie des applications clientes',
     glassdomeLead: 'Ingénieur logiciel senior / Responsable frontend',

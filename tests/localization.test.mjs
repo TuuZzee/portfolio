@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { education, experience, publicLinks, technologies } from '../src/content/facts.ts';
+import {
+  education,
+  experience,
+  independentProjects,
+  publicLinks,
+  technologies,
+} from '../src/content/facts.ts';
 import { getContent } from '../src/content/index.ts';
 import { sectionIds } from '../src/data/sections.ts';
 import { formatDate } from '../src/utils/formatDate.ts';
@@ -52,6 +58,39 @@ test('translation preserves story, skill and experience-detail coverage', () => 
     assert.ok(english.skillGroups.some(({ items }) => items.includes(name)));
     assert.ok(french.skillGroups.some(({ items }) => items.includes(name)));
   }
+});
+
+test('both locales provide the approved copy for the single independent project', () => {
+  assert.deepEqual(independentProjects, [
+    {
+      id: 'clinicalTrialsExplorer',
+      repositoryUrl: 'https://github.com/TuuZzee/clinical-trials-explorer',
+    },
+  ]);
+  assert.deepEqual(english.independentProjects, {
+    title: 'Independent projects',
+    sourceLink: 'View source',
+    projects: {
+      clinicalTrialsExplorer: {
+        title: 'Clinical Trials Explorer',
+        context: 'Applied AI · Data visualization',
+        summary:
+          'An experimental full-stack application for exploring clinical trial data through natural-language questions and interactive charts. Combines AI-assisted query interpretation with deterministic data aggregation and optional source citations.',
+      },
+    },
+  });
+  assert.deepEqual(french.independentProjects, {
+    title: 'Projets personnels',
+    sourceLink: 'Voir le code',
+    projects: {
+      clinicalTrialsExplorer: {
+        title: 'Clinical Trials Explorer',
+        context: 'IA appliquée · Visualisation de données',
+        summary:
+          'Une application expérimentale full-stack permettant d’explorer les données des essais cliniques à travers des questions en langage naturel et des graphiques interactifs. Elle combine l’interprétation des questions par l’IA, l’agrégation déterministe des données et des références aux sources.',
+      },
+    },
+  });
 });
 
 test('French content localizes controls and prose without forbidden punctuation', () => {

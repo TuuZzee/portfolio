@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 
+import { independentProjects } from '../src/content/facts.ts';
 import { getContent } from '../src/content/index.ts';
 import { sectionIds } from '../src/data/sections.ts';
 
@@ -164,6 +165,36 @@ function assertLocalizedProseAndPrivacy(html, content, locale) {
   assert.ok(!/mailto:|\.pdf|\/ko\//.test(html));
 }
 
+function assertIndependentProjects(html, content) {
+  const { title, sourceLink, projects } = content.independentProjects;
+  const [{ id, repositoryUrl }] = independentProjects;
+  const subsection = html.match(
+    /<section aria-labelledby="independent-projects-heading"[^>]*>(.*?)<\/section>/s,
+  );
+  assert.ok(subsection);
+  const [, markup] = subsection;
+
+  assert.deepEqual(
+    [...markup.matchAll(/<(h[34])\b[^>]*>(.*?)<\/\1>/gs)].map(([, tag, text]) => [
+      tag,
+      decode(text.trim()),
+    ]),
+    [
+      ['h3', title],
+      ['h4', projects[id].title],
+    ],
+  );
+  assert.equal([...markup.matchAll(/<li\b/g)].length, 1);
+  assert.ok(decode(markup).includes(projects[id].context));
+  assert.ok(decode(markup).includes(projects[id].summary));
+
+  const links = [...markup.matchAll(/<a\b([^>]*)>(.*?)<\/a>/gs)];
+  assert.equal(links.length, 1);
+  const [, linkAttributes, linkText] = links[0];
+  assert.equal(attributes(linkAttributes).href, repositoryUrl);
+  assert.equal(decode(linkText.trim()), sourceLink);
+}
+
 const scenarios = [
   { name: 'Pages project', origin: 'https://tuuzzee.github.io', base: '/portfolio/' },
   { name: 'Pages root', origin: 'https://tuuzzee.github.io', base: '/' },
@@ -188,6 +219,7 @@ for (const scenario of scenarios) {
         assertLanguageLinks(html, tags, content, locale, scenario.origin, scenario.base);
         assertAssetsAndDisclosures(tags, content, output, scenario.base);
         assertLocalizedProseAndPrivacy(html, content, locale);
+        assertIndependentProjects(html, content);
       }
     });
   });

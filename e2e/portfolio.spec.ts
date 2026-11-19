@@ -2,7 +2,7 @@ import { expect, test as base } from '@playwright/test';
 
 import { readSiteConfig } from '../config/site.mjs';
 import { getContent } from '../src/content';
-import { profile, publicLinks } from '../src/content/facts';
+import { experience, independentProjects, profile, publicLinks } from '../src/content/facts';
 import { type Locale, locales } from '../src/content/schema';
 import { sectionIds } from '../src/data/sections';
 
@@ -106,9 +106,13 @@ for (const locale of locales) {
     await expect(source).toBeVisible();
     await expect(source).toHaveAttribute('href', publicLinks.source);
     await expect(backToTop).toHaveAttribute('href', '#top');
-    await expect(
-      page.locator('#contact').getByRole('link', { name: content.links.github, exact: true }),
-    ).toHaveAttribute('href', publicLinks.github);
+    const contact = page.locator('#contact');
+    await expect(contact.getByRole('link')).toHaveCount(2);
+    for (const site of ['linkedin', 'github'] as const) {
+      await expect(
+        contact.getByRole('link', { name: content.links[site], exact: true }),
+      ).toHaveAttribute('href', publicLinks[site]);
+    }
 
     await source.focus();
     await expect(source).toBeFocused();
@@ -120,10 +124,53 @@ for (const locale of locales) {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
+  test(`${locale}: Selected work includes the localized independent project and a keyboard-accessible source link`, async ({
+    page,
+  }) => {
+    await page.goto(path);
+    const { title, sourceLink, projects } = content.independentProjects;
+    const [{ id, repositoryUrl }] = independentProjects;
+    const project = projects[id];
+    const work = page.getByRole('region', { name: content.sections.work.title, exact: true });
+    await expect(work.getByRole('heading', { level: 2 })).toHaveText(content.sections.work.title);
+    await expect(work.getByRole('heading', { level: 3 })).toHaveText([
+      ...content.selectedWork.map((story) => story.title),
+      title,
+    ]);
+    await expect(work.getByRole('article')).toHaveCount(4);
+    for (const story of content.selectedWork) {
+      const company = experience.find((employer) => employer.id === story.employerId)?.company;
+      const article = work.getByRole('article', { name: story.title, exact: true });
+      await expect(article.locator('p')).toHaveText([
+        `${company} · ${story.context}`,
+        story.summary,
+      ]);
+    }
+
+    const subsection = work.getByRole('region', { name: title, exact: true });
+    await expect(subsection.getByRole('listitem')).toHaveCount(1);
+    const article = subsection.getByRole('article', { name: project.title, exact: true });
+    await expect(article.getByRole('heading', { level: 4 })).toHaveText(project.title);
+    await expect(article.locator('p')).toHaveText([project.context, project.summary]);
+    await expect(work.getByRole('link')).toHaveCount(1);
+    const source = article.getByRole('link', { name: sourceLink, exact: true });
+    await expect(source).toHaveAttribute('href', repositoryUrl);
+
+    await page.getByRole('link', { name: content.hero.action, exact: true }).focus();
+    await page.keyboard.press('Tab');
+    await expect(source).toBeFocused();
+    await expect(source).toHaveCSS('outline-style', 'solid');
+  });
+
   test(`${locale}: active navigation follows reading position and clears a stale Contact hash`, async ({
     page,
   }) => {
     await page.goto(`${path}#contact`);
+    const navigation = page.getByRole('navigation', { name: content.ui.mainNavigation });
+    const hrefs = await navigation
+      .getByRole('link')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    expect(hrefs).toEqual(sectionIds.map((id) => `#${id}`));
     const current = page.locator('.site-navigation [aria-current="location"]');
     await expect(current).toHaveAttribute('href', '#contact');
 
@@ -235,13 +282,17 @@ for (const locale of locales) {
     ).not.toBe('none');
   });
 
-  test(`${locale}: expanded content fits responsive widths in both themes and honors reduced motion`, async ({
+  test(`${locale}: content fits responsive widths in both themes and honors reduced motion`, async ({
     page,
   }) => {
     await page.goto(path);
     await page.locator('details summary').first().click();
     await expect(page.locator('details').first()).toHaveAttribute('open', '');
 
+    const projectSource = page.locator('#work').getByRole('link', {
+      name: content.independentProjects.sourceLink,
+      exact: true,
+    });
     for (const width of [320, 375, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       for (const colorScheme of ['light', 'dark'] as const) {
@@ -250,6 +301,8 @@ for (const locale of locales) {
         expect(
           await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
         ).toBe(true);
+        await projectSource.scrollIntoViewIfNeeded();
+        await expect(projectSource).toBeInViewport();
         const footer = page.getByRole('contentinfo');
         await footer.scrollIntoViewIfNeeded();
         await expect(

@@ -1,5 +1,5 @@
 ---
-import { experience } from '../content/facts';
+import { experience, independentProjects } from '../content/facts';
 import type { PortfolioContent } from '../content/schema';
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { content } = Astro.props;
+const projectCopy = content.independentProjects;
 
 const stories = content.selectedWork.map((story) => {
   const employer = experience.find(({ id }) => id === story.employerId);
@@ -32,3 +33,28 @@ const stories = content.selectedWork.map((story) => {
     </li>
   ))}
 </ul>
+
+<section aria-labelledby="independent-projects-heading" class="mt-8 border-t border-divider pt-6">
+  <h3 id="independent-projects-heading" class="text-xl font-semibold tracking-tight text-text">
+    {projectCopy.title}
+  </h3>
+  <ul class="mt-4 space-y-8">
+    {independentProjects.map(({ id, repositoryUrl }) => {
+      const { title, context, summary } = projectCopy.projects[id];
+      return (
+        <li>
+          <article aria-labelledby={`project-${id}`}>
+            <p class="text-sm text-interactive">{context}</p>
+            <h4 id={`project-${id}`} class="mt-2 text-lg leading-snug font-semibold text-text">
+              {title}
+            </h4>
+            <p class="mt-3">{summary}</p>
+            <a href={repositoryUrl} class="text-link mt-1">
+              {projectCopy.sourceLink}
+            </a>
+          </article>
+        </li>
+      );
+    })}
+  </ul>
+</section>

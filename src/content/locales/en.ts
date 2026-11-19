@@ -229,6 +229,18 @@ export const englishContent = {
     [locations.toulouseParis]: locations.toulouseParis,
   },
   selectedWork,
+  independentProjects: {
+    title: 'Independent projects',
+    sourceLink: 'View source',
+    projects: {
+      clinicalTrialsExplorer: {
+        title: 'Clinical Trials Explorer',
+        context: 'Applied AI · Data visualization',
+        summary:
+          'An experimental full-stack application for exploring clinical trial data through natural-language questions and interactive charts. Combines AI-assisted query interpretation with deterministic data aggregation and optional source citations.',
+      },
+    },
+  },
   roleTitles,
   experienceCopy,
   skillGroups,

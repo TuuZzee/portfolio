@@ -44,6 +44,15 @@ export const publicLinks = {
   source: 'https://github.com/TuuZzee/portfolio',
 } as const;
 
+export const independentProjects = [
+  {
+    id: 'clinicalTrialsExplorer',
+    repositoryUrl: 'https://github.com/TuuZzee/clinical-trials-explorer',
+  },
+] as const;
+
+export type IndependentProjectId = (typeof independentProjects)[number]['id'];
+
 export const experience = [
   {
     id: 'glassdome',

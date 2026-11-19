@@ -1,5 +1,5 @@
 import type { SectionId } from '../data/sections';
-import type { EducationId, ExperienceId, Location, RoleId } from './facts';
+import type { EducationId, ExperienceId, IndependentProjectId, Location, RoleId } from './facts';
 
 export const locales = ['en', 'fr'] as const;
 export type Locale = (typeof locales)[number];
@@ -26,6 +26,12 @@ export interface ExperienceCopy {
 export interface SelectedWork {
   readonly id: string;
   readonly employerId: string;
+  readonly title: string;
+  readonly context: string;
+  readonly summary: string;
+}
+
+interface IndependentProjectCopy {
   readonly title: string;
   readonly context: string;
   readonly summary: string;
@@ -89,6 +95,11 @@ export interface PortfolioContent {
   readonly earlierExperienceLabel: string;
   readonly locationLabels: Readonly<Record<Location, string>>;
   readonly selectedWork: readonly (SelectedWork & { readonly employerId: ExperienceId })[];
+  readonly independentProjects: {
+    readonly title: string;
+    readonly sourceLink: string;
+    readonly projects: Readonly<Record<IndependentProjectId, IndependentProjectCopy>>;
+  };
   readonly roleTitles: Readonly<Record<RoleId, string>>;
   readonly experienceCopy: Readonly<Record<ExperienceId, ExperienceCopy>>;
   readonly skillGroups: readonly SkillGroup[];

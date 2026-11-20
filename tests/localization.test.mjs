@@ -45,6 +45,10 @@ test('all locales cover every section, role, employer and education entry', () =
 });
 
 test('translation preserves story, skill and experience-detail coverage', () => {
+  const technologyNames = new Set(Object.values(technologies));
+  const sharedSkillItems = ({ skillGroups }) =>
+    skillGroups.map(({ items }) => items.filter((item) => technologyNames.has(item)));
+
   for (const content of contents) {
     assert.equal(content.about.length, english.about.length);
     assert.deepEqual(
@@ -61,10 +65,29 @@ test('translation preserves story, skill and experience-detail coverage', () => 
         english.experienceCopy[id].details?.length,
       );
     }
-    for (const name of Object.values(technologies)) {
-      assert.ok(content.skillGroups.some(({ items }) => items.includes(name)));
-    }
+    const items = sharedSkillItems(content);
+    assert.deepEqual(items, sharedSkillItems(english));
+    assert.deepEqual(items.flat().sort(), [...technologyNames].sort());
+    assert.ok(
+      !content.skillGroups.some(({ items }) =>
+        items.some((item) =>
+          ['Structured outputs', 'Sorties structurées', '구조화된 출력'].includes(item),
+        ),
+      ),
+    );
   }
+});
+
+test('Korean copy uses AI 활용 and retains the reviewed title and provisional credential', () => {
+  assert.equal(korean.skillGroups.find(({ id }) => id === 'backend')?.title, '백엔드 및 AI 활용');
+  assert.equal(
+    korean.independentProjects.projects.clinicalTrialsExplorer.context,
+    'AI 활용 · 데이터 시각화',
+  );
+  assert.match(korean.experienceCopy.glassdome.details?.join(' ') ?? '', /AI 활용 가능성/);
+  assert.doesNotMatch(JSON.stringify(korean), /AI 응용/);
+  assert.equal(korean.roleTitles.glassdomeHead, '클라이언트 소프트웨어 엔지니어링 총괄');
+  assert.equal(korean.educationCopy.lca.title, '전과정평가(LCA) 실무자 자격');
 });
 
 test('English and French retain the approved copy for the single independent project', () => {

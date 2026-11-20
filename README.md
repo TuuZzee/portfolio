@@ -2,7 +2,7 @@
 
 A static portfolio built with Astro, strict TypeScript and Tailwind CSS 4. The header includes dropdowns for language and theme, and experience entries use expandable details.
 
-[Live website: English](https://tuuzzee.github.io/portfolio/) · [Site en français](https://tuuzzee.github.io/portfolio/fr/)
+[Live website: English](https://tuuzzee.github.io/portfolio/) · [Site en français](https://tuuzzee.github.io/portfolio/fr/) · [한국어](https://tuuzzee.github.io/portfolio/ko/) (pending deployment)
 
 ## Development
 

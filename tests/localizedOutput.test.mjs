@@ -6,9 +6,11 @@ import { join } from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 
-import { independentProjects } from '../src/content/facts.ts';
+import { education, experience, independentProjects, publicLinks } from '../src/content/facts.ts';
 import { getContent } from '../src/content/index.ts';
+import { languageNames, locales } from '../src/content/schema.ts';
 import { sectionIds } from '../src/data/sections.ts';
+import { formatDate } from '../src/utils/formatDate.ts';
 
 function attributes(tag) {
   return Object.fromEntries(
@@ -20,7 +22,7 @@ const decode = (text) =>
   text.replaceAll('&amp;', '&').replaceAll('&#39;', "'").replaceAll('&quot;', '"');
 
 function parsePage(html) {
-  return [...html.matchAll(/<(html|meta|link|a|img|details|time)\b[^>]*>/g)].map(([tag, name]) => ({
+  return [...html.matchAll(/<(html|meta|link|a|img|details)\b[^>]*>/g)].map(([tag, name]) => ({
     name,
     attrs: attributes(tag),
     raw: tag,
@@ -28,7 +30,7 @@ function parsePage(html) {
 }
 
 function localeRoute(base, locale) {
-  return base + (locale === 'fr' ? 'fr/' : '');
+  return base + (locale === 'en' ? '' : `${locale}/`);
 }
 
 function withProductionBuild({ base, origin }, verify) {
@@ -87,9 +89,9 @@ function assertMetadata(html, tags, content, locale, origin, route) {
   assert.equal(canonicals[0].attrs.href, origin + route);
 }
 
-function assertLanguageLinks(html, tags, content, locale, origin, base) {
-  for (const target of ['en', 'fr']) {
-    const path = base + (target === 'fr' ? 'fr/' : '');
+function assertLanguageLinks(html, tags, locale, origin, base) {
+  for (const target of locales) {
+    const path = localeRoute(base, target);
     const alternate = tags.filter(
       ({ attrs }) => attrs.rel === 'alternate' && attrs.hreflang === target,
     );
@@ -101,7 +103,8 @@ function assertLanguageLinks(html, tags, content, locale, origin, base) {
         name === 'a' && raw.includes('data-language-link') && attrs.hreflang === target,
     );
     assert.equal(link.attrs.href, path);
-    assert.equal(decode(link.attrs['aria-label']), content.ui.languageLabels[target]);
+    assert.equal(link.attrs.lang, target);
+    assert.ok(html.includes(`>${languageNames[target]}</a>`));
     assert.equal(link.attrs['aria-current'], target === locale ? 'page' : undefined);
   }
   for (const id of sectionIds) {
@@ -111,7 +114,7 @@ function assertLanguageLinks(html, tags, content, locale, origin, base) {
 
 function assertAssetsAndDisclosures(tags, content, output, base) {
   for (const { name, attrs, raw } of tags) {
-    if (name === 'details') {
+    if (name === 'details' && attrs.name === 'experience-details') {
       assert.ok(!('open' in attrs) && !/\sopen(?:\s|>)/.test(raw));
     }
     if (name === 'img') {
@@ -131,38 +134,70 @@ function assertAssetsAndDisclosures(tags, content, output, base) {
       assert.ok(readFileSync(join(output, resource.slice(base.length))).length > 0, resource);
     }
   }
-  assert.equal(tags.filter(({ name }) => name === 'details').length, 4);
-  assert.equal(tags.filter(({ name }) => name === 'time').length, 18);
+  assert.equal(
+    tags.filter(({ name, attrs }) => name === 'details' && attrs.name === 'experience-details')
+      .length,
+    4,
+  );
 }
 
-function assertLocalizedProseAndPrivacy(html, content, locale) {
-  if (locale === 'fr') {
-    for (const label of [
-      'Aller au contenu',
-      'Retour en haut',
-      'Choix du thème',
-      'Voir les détails',
-      'novembre 2024',
-      'Séoul, Corée du Sud',
-    ]) {
-      assert.ok(html.includes(label), label);
-    }
+function assertLocalizedDates(html, locale) {
+  const periods = [...experience.flatMap(({ roles }) => roles), ...education];
+  const dates = periods.flatMap(({ start, end }) => (end ? [start, end] : [start]));
+  const rendered = [...html.matchAll(/<time datetime="([^"]+)">([^<]+)<\/time>/g)];
+  assert.deepEqual(
+    rendered.map(([, datetime, text]) => [datetime, text]),
+    dates.map((date) => [date, formatDate(date, locale)]),
+  );
+}
 
-    for (const label of [
-      'Skip to content',
-      'Back to top',
-      'Use dark theme',
-      'View details',
-      'Earlier experience',
-    ]) {
-      assert.ok(!html.includes(label), label);
-    }
+function assertLocalizedProse(html, content) {
+  for (const text of [
+    content.hero.discipline,
+    content.hero.heading,
+    content.hero.introduction,
+    content.hero.action,
+    ...Object.values(content.sections).flatMap(({ title, navigationLabel }) => [
+      title,
+      navigationLabel,
+    ]),
+    ...content.about,
+    content.contact,
+    ...Object.values(content.roleTitles),
+    ...Object.values(content.experienceCopy).flatMap(({ summary, details }) => [
+      summary,
+      ...(details ?? []),
+    ]),
+    ...content.skillGroups.flatMap(({ title, items, note }) => [
+      title,
+      ...items,
+      ...(note ? [note] : []),
+    ]),
+    ...Object.values(content.educationCopy).map(({ title }) => title),
+    ...Object.values(content.locationLabels),
+    content.experienceDetails.show,
+    content.experienceDetails.hide,
+    content.earlierExperienceLabel,
+    ...Object.values(content.ui.themeLabels),
+    content.ui.skipLink,
+    content.ui.backToTop,
+    content.ui.sourceCode,
+  ]) {
+    assert.ok(text.trim() && decode(html).includes(text), text);
+  }
+}
 
-    for (const label of Object.values(content.ui.themeLabels)) {
-      assert.ok(html.includes(`aria-label="${label}"`));
+function assertPrivacy(html, tags) {
+  assert.doesNotMatch(html, /mailto:|tel:|\.pdf|<form\b|[\w.+-]+@[\w-]+(?:\.[\w-]+)+/i);
+  const approvedLinks = new Set([
+    ...Object.values(publicLinks),
+    ...independentProjects.map(({ repositoryUrl }) => repositoryUrl),
+  ]);
+  for (const { name, attrs } of tags) {
+    if (name === 'a' && !attrs.href.startsWith('#') && !attrs.href.startsWith('/')) {
+      assert.ok(approvedLinks.has(attrs.href), attrs.href);
     }
   }
-  assert.ok(!/mailto:|\.pdf|\/ko\//.test(html));
 }
 
 function assertIndependentProjects(html, content) {
@@ -204,21 +239,23 @@ const scenarios = [
 for (const scenario of scenarios) {
   test(`production locales and metadata work with ${scenario.name}`, () => {
     withProductionBuild(scenario, (output) => {
-      assert.ok(!readdirSync(output).some((name) => ['en', 'ko'].includes(name)));
+      assert.ok(!readdirSync(output).includes('en'));
 
-      for (const locale of ['en', 'fr']) {
+      for (const locale of locales) {
         const content = getContent(locale);
         const route = localeRoute(scenario.base, locale);
         const html = readFileSync(
-          join(output, locale === 'fr' ? 'fr/index.html' : 'index.html'),
+          join(output, locale === 'en' ? 'index.html' : `${locale}/index.html`),
           'utf8',
         );
         const tags = parsePage(html);
 
         assertMetadata(html, tags, content, locale, scenario.origin, route);
-        assertLanguageLinks(html, tags, content, locale, scenario.origin, scenario.base);
+        assertLanguageLinks(html, tags, locale, scenario.origin, scenario.base);
         assertAssetsAndDisclosures(tags, content, output, scenario.base);
-        assertLocalizedProseAndPrivacy(html, content, locale);
+        assertLocalizedDates(html, locale);
+        assertLocalizedProse(html, content);
+        assertPrivacy(html, tags);
         assertIndependentProjects(html, content);
       }
     });

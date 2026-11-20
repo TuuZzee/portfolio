@@ -1,8 +1,14 @@
 import type { SectionId } from '../data/sections';
 import type { EducationId, ExperienceId, IndependentProjectId, Location, RoleId } from './facts';
 
-export const locales = ['en', 'fr'] as const;
+export const locales = ['en', 'fr', 'ko'] as const;
 export type Locale = (typeof locales)[number];
+
+export const languageNames = {
+  en: 'English',
+  fr: 'Français',
+  ko: '한국어',
+} as const satisfies Record<Locale, string>;
 export type CareerDate = `${number}` | `${number}-${number}`;
 
 export interface RolePeriod {
@@ -78,7 +84,7 @@ export interface PortfolioContent {
   readonly experienceDetails: {
     readonly show: string;
     readonly hide: string;
-    readonly forCompany: string;
+    readonly forCompany: `${string}{company}${string}`;
   };
   readonly ui: {
     readonly skipLink: string;
@@ -89,7 +95,6 @@ export interface PortfolioContent {
     readonly sourceCode: string;
     readonly portraitAlt: string;
     readonly languageNavigation: string;
-    readonly languageLabels: Readonly<Record<Locale, string>>;
   };
   readonly dateSeparator: string;
   readonly earlierExperienceLabel: string;

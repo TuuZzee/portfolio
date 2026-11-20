@@ -11,9 +11,9 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Use Tailwind CSS 4 for styling, with semantic design tokens in `src/styles/global.css`.
 - Prefer `.astro` components and HTML over hydrated client frameworks. Add browser JavaScript only when interaction requires it.
 - Use small, focused components. Keep reusable layout components under `src/layouts/` or `src/components/`, and pages under `src/pages/`.
-- Keep employer identity, role IDs, dates, locations, technology names and public URLs in `src/content/facts.ts`. Keep English/French presentation text in `src/content/locales/`, with common contracts in `src/content/schema.ts` and lookup in `src/content/index.ts`. Do not duplicate chronological facts in prose or components.
-- Keep stable section IDs in `src/data/sections.ts`, with localized navigation labels and titles supplied through typed props. English and French share `PortfolioPage.astro` and UI components. Do not add placeholder locales or duplicate page markup.
-- Use Astro's native i18n routing with English at the default root and French at `/fr/`. Localize controls, dates, alt text and metadata, and keep canonical/alternate URLs compatible with the configured base path. Preserve approved English wording and require editorial review for new translations.
+- Keep employer identity, role IDs, dates, locations, technology names and public URLs in `src/content/facts.ts`. Keep English, French and Korean presentation text in `src/content/locales/`, with common contracts in `src/content/schema.ts` and lookup in `src/content/index.ts`. Do not duplicate chronological facts in prose or components.
+- Keep stable section IDs in `src/data/sections.ts`, with localized navigation labels and titles supplied through typed props. All locales share `PortfolioPage.astro` and UI components. Do not add placeholder locales or duplicate page markup.
+- Use Astro's native i18n routing with English at the default root, French at `/fr/`, and Korean at `/ko/`. Localize controls, dates, alt text and metadata, and keep canonical/alternate URLs compatible with the configured base path. Preserve approved English and French wording and require editorial review for new translations.
 - Do not add a backend, API, CMS, state-management library, or runtime icon bundle without a concrete technical need.
 - Use Tabler SVG icons selectively, with accessible names when an icon conveys meaning.
 
@@ -24,6 +24,7 @@ This repository contains a small, public-facing personal portfolio website. Opti
 - Support light and dark themes. Ensure readable contrast, visible keyboard focus, and reduced-motion behavior.
 - Use semantic landmarks, a logical heading order, native controls, descriptive link text, and meaningful image alt text.
 - Keep navigation and interactive elements usable on small screens and with a keyboard.
+- Use native dropdown disclosures for the header controls. Keep language links usable without JavaScript, carry shared section anchors when JavaScript is available, and retain system theme support when the theme dropdown is hidden.
 - Experience summaries, roles and dates must remain visible outside native `<details>` disclosures. Start disclosures collapsed, retain clear state affordances and keyboard focus, and keep interactive links/buttons out of `<summary>`.
 - In visitor-facing prose, use natural language appropriate to the locale and avoid em dashes and semicolons. This rule does not apply to programming syntax.
 
@@ -75,6 +76,6 @@ This repository contains a small, public-facing personal portfolio website. Opti
   ```
 
 - Report what changed, what was actually tested, and what remains unverified. Do not claim a hosted deployment or CI run passed unless it was observed.
-- Browser smoke tests use Playwright Chromium against the production build on loopback port 4173. Build before `test:e2e`, or use `pnpm run validate`. Keep the Node tests separate, preserve both language routes and do not substitute dev-server results for production verification.
+- Browser smoke tests use Playwright Chromium against the production build on loopback port 4173. Build before `test:e2e`, or use `pnpm run validate`. Keep the Node tests separate, preserve all three language routes and do not substitute dev-server results for production verification.
 - Keep browser artifacts and caches ignored. Do not commit screenshots, traces, reports, audit output or private source files. Inspect Git identity metadata as well as file contents before public release, and never rewrite history without explicit authorization.
 - Do not commit, push, merge, or modify remote settings unless explicitly instructed.

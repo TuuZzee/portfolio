@@ -36,4 +36,36 @@ const { content } = Astro.props;
 
 <script>
   import '../scripts/activeNavigation';
+
+  const dropdowns = document.querySelectorAll<HTMLDetailsElement>('.header-dropdown');
+
+  function dismiss(dropdown: HTMLDetailsElement) {
+    const hadFocus = dropdown.contains(document.activeElement);
+    dropdown.open = false;
+    if (hadFocus) dropdown.querySelector('summary')?.focus();
+  }
+
+  function dismissOutside(event: Event) {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+
+    for (const dropdown of dropdowns) {
+      if (dropdown.open && !dropdown.contains(target)) {
+        dismiss(dropdown);
+      }
+    }
+  }
+
+  document.addEventListener('click', dismissOutside);
+  document.addEventListener('focusin', dismissOutside);
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+
+    for (const dropdown of dropdowns) {
+      if (dropdown.open) {
+        event.preventDefault();
+        dismiss(dropdown);
+      }
+    }
+  });
 </script>

@@ -44,7 +44,7 @@ const { content } = Astro.props;
                 <span class="details-hide">{content.experienceDetails.hide}</span>
                 <span class="sr-only">
                   {' '}
-                  {content.experienceDetails.forCompany} {company}
+                  {content.experienceDetails.forCompany.replace('{company}', company)}
                 </span>
               </summary>
               <ul class="list-disc space-y-3 pb-2 pl-5">

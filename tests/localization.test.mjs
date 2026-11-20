@@ -9,15 +9,18 @@ import {
   technologies,
 } from '../src/content/facts.ts';
 import { getContent } from '../src/content/index.ts';
+import { locales } from '../src/content/schema.ts';
 import { sectionIds } from '../src/data/sections.ts';
 import { formatDate } from '../src/utils/formatDate.ts';
 import { languageHash } from '../src/utils/languageHash.ts';
 
 const english = getContent('en');
 const french = getContent('fr');
+const korean = getContent('ko');
+const contents = locales.map(getContent);
 
-test('both locales cover every section, role, employer and education entry', () => {
-  for (const content of [english, french]) {
+test('all locales cover every section, role, employer and education entry', () => {
+  for (const content of contents) {
     assert.deepEqual(Object.keys(content.sections), [...sectionIds]);
     assert.deepEqual(
       Object.keys(content.experienceCopy),
@@ -31,6 +34,10 @@ test('both locales cover every section, role, employer and education entry', () 
       Object.keys(content.educationCopy),
       education.map(({ id }) => id),
     );
+    assert.deepEqual(
+      Object.keys(content.independentProjects.projects),
+      independentProjects.map(({ id }) => id),
+    );
     for (const label of Object.values(content.ui.themeLabels)) {
       assert.ok(label.length > 0);
     }
@@ -38,29 +45,29 @@ test('both locales cover every section, role, employer and education entry', () 
 });
 
 test('translation preserves story, skill and experience-detail coverage', () => {
-  assert.deepEqual(
-    french.selectedWork.map(({ id, employerId }) => [id, employerId]),
-    english.selectedWork.map(({ id, employerId }) => [id, employerId]),
-  );
-  assert.deepEqual(
-    french.skillGroups.map(({ id, items }) => [id, items.length]),
-    english.skillGroups.map(({ id, items }) => [id, items.length]),
-  );
-
-  for (const { id } of experience) {
-    assert.equal(
-      french.experienceCopy[id].details?.length,
-      english.experienceCopy[id].details?.length,
+  for (const content of contents) {
+    assert.equal(content.about.length, english.about.length);
+    assert.deepEqual(
+      content.selectedWork.map(({ id, employerId }) => [id, employerId]),
+      english.selectedWork.map(({ id, employerId }) => [id, employerId]),
     );
-  }
-
-  for (const name of Object.values(technologies)) {
-    assert.ok(english.skillGroups.some(({ items }) => items.includes(name)));
-    assert.ok(french.skillGroups.some(({ items }) => items.includes(name)));
+    assert.deepEqual(
+      content.skillGroups.map(({ id, items, note }) => [id, items.length, Boolean(note)]),
+      english.skillGroups.map(({ id, items, note }) => [id, items.length, Boolean(note)]),
+    );
+    for (const { id } of experience) {
+      assert.equal(
+        content.experienceCopy[id].details?.length,
+        english.experienceCopy[id].details?.length,
+      );
+    }
+    for (const name of Object.values(technologies)) {
+      assert.ok(content.skillGroups.some(({ items }) => items.includes(name)));
+    }
   }
 });
 
-test('both locales provide the approved copy for the single independent project', () => {
+test('English and French retain the approved copy for the single independent project', () => {
   assert.deepEqual(independentProjects, [
     {
       id: 'clinicalTrialsExplorer',
@@ -93,9 +100,11 @@ test('both locales provide the approved copy for the single independent project'
   });
 });
 
-test('French content localizes controls and prose without forbidden punctuation', () => {
+test('French and Korean localize controls and use approved punctuation', () => {
   assert.equal(french.metadata.ogLocale, 'fr_FR');
   assert.equal(french.locationLabels['Seoul, South Korea'], 'Séoul, Corée du Sud');
+  assert.equal(korean.metadata.ogLocale, 'ko_KR');
+  assert.equal(korean.locationLabels['Seoul, South Korea'], '대한민국 서울');
   for (const key of [
     'skipLink',
     'mainNavigation',
@@ -105,9 +114,9 @@ test('French content localizes controls and prose without forbidden punctuation'
     'portraitAlt',
     'languageNavigation',
   ]) {
-    assert.notEqual(french.ui[key], english.ui[key]);
+    assert.equal(new Set(contents.map(({ ui }) => ui[key])).size, locales.length);
   }
-  for (const content of [english, french]) {
+  for (const content of contents) {
     assert.ok(!/[—;]/.test(JSON.stringify(content)));
   }
 });
@@ -117,6 +126,9 @@ test('dates localize month names without changing year-only precision', () => {
   assert.equal(formatDate('2023-05', 'fr'), 'mai 2023');
   assert.equal(formatDate('2011', 'fr'), '2011');
   assert.equal(formatDate('2024-11', 'en'), 'November 2024');
+  assert.equal(formatDate('2024-11', 'ko'), '2024년 11월');
+  assert.equal(formatDate('2011', 'ko'), '2011년');
+  assert.equal(korean.dateSeparator, '–');
   assert.equal(french.dateSeparator, 'à');
   assert.equal(english.dateSeparator, 'to');
 });

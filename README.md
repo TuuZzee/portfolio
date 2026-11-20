@@ -1,6 +1,6 @@
 # Personal Portfolio
 
-A static English/French portfolio built with Astro, strict TypeScript and Tailwind CSS 4, with responsive navigation, light/dark themes and expandable experience details.
+A static portfolio built with Astro, strict TypeScript and Tailwind CSS 4. The header includes dropdowns for language and theme, and experience entries use expandable details.
 
 [Live website: English](https://tuuzzee.github.io/portfolio/) · [Site en français](https://tuuzzee.github.io/portfolio/fr/)
 
@@ -15,7 +15,9 @@ pnpm run dev
 
 Dependencies must have been published at least 72 hours ago. Installation fails for younger releases or missing publication timestamps, with no package exceptions.
 
-Open `/portfolio/` for English or `/portfolio/fr/` for French at the printed local URL.
+Open `/portfolio/` for English, `/portfolio/fr/` for French, or `/portfolio/ko/` for Korean at the printed local URL. English is the default.
+
+The language dropdown uses native links and works without JavaScript. With JavaScript, it carries shared section anchors across languages. The theme dropdown offers System, Light and Dark, with the preference shared across pages and tabs. With JavaScript disabled, the site follows the system color scheme.
 
 ```sh
 pnpm run build
@@ -31,14 +33,14 @@ pnpm exec playwright install chromium
 pnpm run validate
 ```
 
-`validate` runs formatting, linting, Astro/TypeScript checks, Node tests, the production build and Playwright smoke tests. Browser tests cover both languages on desktop/mobile Chromium.
+`validate` runs formatting, linting, Astro/TypeScript checks, Node tests, the production build and Playwright smoke tests. Browser tests cover all languages on desktop and mobile Chromium.
 
 Use `pnpm run format` to apply formatting. Individual checks are available in `package.json`. To run only browser tests, build first, then run `pnpm run test:e2e`.
 
 ## Structure
 
 - `src/pages/`, `src/layouts/`, `src/components/`: routes and shared UI.
-- `src/content/`: shared facts, typed contracts and English/French copy.
+- `src/content/`: shared facts, typed contracts and English, French and Korean copy.
 - `src/data/sections.ts`: shared navigation anchors.
 - `src/styles/`, `src/scripts/`, `src/utils/`: styling and interaction logic.
 - `src/assets/`, `public/`: portrait, favicons and static assets.

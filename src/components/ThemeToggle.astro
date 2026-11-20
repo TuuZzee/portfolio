@@ -35,19 +35,11 @@ const themes = [
 ] as const;
 ---
 
-<div class="theme-control" role="group" aria-label={content.ui.themeGroup}>
-  {themes.map(({ value, label, paths }) => (
-    <button
-      type="button"
-      class="theme-button"
-      data-theme-option={value}
-      aria-label={label}
-      aria-pressed="false"
-      title={label}
-      disabled
-    >
+<details class="header-dropdown theme-control" name="header-controls" hidden>
+  <summary aria-label={content.ui.themeGroup}>
+    {themes.map(({ value, paths }) => (
       <svg
-        xmlns="http://www.w3.org/2000/svg"
+        data-theme-icon={value}
         width="20"
         height="20"
         viewBox="0 0 24 24"
@@ -63,12 +55,25 @@ const themes = [
           <path d={d} />
         ))}
       </svg>
-    </button>
-  ))}
-</div>
+    ))}
+  </summary>
+  <div class="header-dropdown-panel" role="group" aria-label={content.ui.themeGroup}>
+    {themes.map(({ value, label }) => (
+      <button
+        type="button"
+        class="header-dropdown-option"
+        data-theme-option={value}
+        aria-pressed="false"
+      >
+        {label}
+      </button>
+    ))}
+  </div>
+</details>
 
 <script>
-  const control = document.querySelector<HTMLElement>('.theme-control');
+  const control = document.querySelector<HTMLDetailsElement>('.theme-control');
+  const trigger = control?.querySelector('summary');
   const buttons = control?.querySelectorAll<HTMLButtonElement>('[data-theme-option]');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
   let preference = document.documentElement.dataset.themePreference ?? 'system';
@@ -82,15 +87,16 @@ const themes = [
     });
   }
 
-  if (control && buttons) {
+  if (control && trigger && buttons) {
     applyTheme();
-    control.classList.add('is-ready');
+    control.hidden = false;
 
     buttons.forEach((button) => {
-      button.disabled = false;
       button.addEventListener('click', () => {
         preference = button.dataset.themeOption ?? 'system';
         applyTheme();
+        control.open = false;
+        trigger.focus();
         try {
           if (preference === 'system') {
             localStorage.removeItem('portfolio-theme');

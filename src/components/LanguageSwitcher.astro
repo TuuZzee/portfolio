@@ -1,45 +1,53 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
-import { locales, type PortfolioContent } from '../content/schema';
+import { languageNames, locales, type PortfolioContent } from '../content/schema';
 
 interface Props {
   content: PortfolioContent;
 }
 
 const { content } = Astro.props;
+const code = content.locale.toUpperCase();
 ---
 
-<nav class="language-switcher" aria-label={content.ui.languageNavigation}>
-  {locales.map((locale) => (
-    <a
-      href={getRelativeLocaleUrl(locale)}
-      hreflang={locale}
-      aria-label={content.ui.languageLabels[locale]}
-      aria-current={content.locale === locale ? 'page' : undefined}
-      data-language-link
-    >
-      {locale.toUpperCase()}
-    </a>
-  ))}
-</nav>
+<details class="header-dropdown language-switcher" name="header-controls">
+  <summary aria-label={`${content.ui.languageNavigation} (${code})`}>{code}</summary>
+  <nav class="header-dropdown-panel" aria-label={content.ui.languageNavigation}>
+    {locales.map((locale) => (
+      <a
+        class="header-dropdown-option"
+        href={getRelativeLocaleUrl(locale)}
+        hreflang={locale}
+        lang={locale}
+        aria-current={content.locale === locale ? 'page' : undefined}
+        data-language-link
+      >
+        {languageNames[locale]}
+      </a>
+    ))}
+  </nav>
+</details>
 
 <script>
   import { languageHash } from '../utils/languageHash';
 
-  const links = document.querySelectorAll<HTMLAnchorElement>('[data-language-link]');
+  const switcher = document.querySelector<HTMLDetailsElement>('.language-switcher');
+  const links = switcher?.querySelectorAll<HTMLAnchorElement>('[data-language-link]');
+
   function updateLinks() {
     const current = document.querySelector<HTMLAnchorElement>(
       '.site-navigation a[aria-current="location"]',
     );
     const hash = languageHash(current?.hash ?? window.location.hash);
-    links.forEach((link) => {
-      link.hash = hash;
+    links?.forEach((link) => {
+      link.setAttribute('href', link.pathname + hash);
     });
   }
-  updateLinks();
+
+  switcher?.addEventListener('toggle', updateLinks);
   window.addEventListener('hashchange', updateLinks);
-  links.forEach((link) => {
+  links?.forEach((link) => {
     link.addEventListener('focus', updateLinks);
     link.addEventListener('pointerdown', updateLinks);
     link.addEventListener('click', updateLinks);

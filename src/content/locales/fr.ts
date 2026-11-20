@@ -31,21 +31,20 @@ export const frenchContent = {
   contact:
     'Pour échanger sur la direction d’équipes d’ingénierie, l’architecture frontend ou des projets logiciels, vous pouvez me contacter sur LinkedIn.',
   links: { linkedin: 'LinkedIn', github: 'GitHub' },
-  experienceDetails: { show: 'Voir les détails', hide: 'Masquer les détails', forCompany: 'pour' },
+  experienceDetails: {
+    show: 'Voir les détails',
+    hide: 'Masquer les détails',
+    forCompany: 'pour {company}',
+  },
   ui: {
     skipLink: 'Aller au contenu',
     mainNavigation: 'Navigation principale',
     themeGroup: 'Choix du thème',
-    themeLabels: {
-      system: 'Utiliser le thème du système',
-      light: 'Utiliser le thème clair',
-      dark: 'Utiliser le thème sombre',
-    },
+    themeLabels: { system: 'Système', light: 'Clair', dark: 'Sombre' },
     backToTop: 'Retour en haut',
     sourceCode: 'Code source',
     portraitAlt: 'Portrait de Guillaume Becker',
     languageNavigation: 'Langue',
-    languageLabels: { en: 'Lire en anglais', fr: 'Lire en français' },
   },
   dateSeparator: 'à',
   earlierExperienceLabel: 'Premières expériences',

@@ -3,14 +3,14 @@ import { expect, test as base } from '@playwright/test';
 import { readSiteConfig } from '../config/site.mjs';
 import { getContent } from '../src/content';
 import { experience, independentProjects, profile, publicLinks } from '../src/content/facts';
-import { type Locale, locales } from '../src/content/schema';
+import { languageNames, type Locale, locales } from '../src/content/schema';
 import { sectionIds } from '../src/data/sections';
 
 const { site, base: configuredBase } = readSiteConfig();
 const basePath = configuredBase === '/' ? '/' : `${configuredBase}/`;
 
 function localeRoute(locale: Locale): string {
-  return `${basePath}${locale === 'fr' ? 'fr/' : ''}`;
+  return `${basePath}${locale === 'en' ? '' : `${locale}/`}`;
 }
 
 // Keep every flow offline except for its loopback production preview.
@@ -47,8 +47,8 @@ const test = base.extend({
 
 for (const locale of locales) {
   const content = getContent(locale);
-  const path = locale === 'fr' ? 'fr/' : './';
-  const target = locale === 'fr' ? 'en' : 'fr';
+  const path = localeRoute(locale);
+  const languageName = `${content.ui.languageNavigation} (${locale.toUpperCase()})`;
 
   test(`${locale}: production page, metadata, portrait and icons`, async ({ page, request }) => {
     const response = await page.goto(path);
@@ -90,7 +90,7 @@ for (const locale of locales) {
       expect((await request.get(asset ?? '')).status()).toBe(200);
     }
 
-    for (const absent of [`${basePath}en/`, `${basePath}ko/`, `${basePath}resume.pdf`]) {
+    for (const absent of [`${basePath}en/`, `${basePath}resume.pdf`]) {
       expect((await request.get(absent)).status()).toBe(404);
     }
   });
@@ -201,58 +201,121 @@ for (const locale of locales) {
     expect(unobscured).toBe(true);
   });
 
-  test(`${locale}: keyboard language switch retains the shared section and theme`, async ({
-    page,
-  }) => {
-    await page.goto(`${path}#experience`);
-    await page.getByRole('button', { name: content.ui.themeLabels.dark, exact: true }).click();
-    // Theme controls can scroll a non-sticky mobile header into view. Restore the reading section.
-    await page.locator('#experience').evaluate((section) => section.scrollIntoView());
-    await expect(page.locator('.site-navigation [aria-current="location"]')).toHaveAttribute(
-      'href',
-      '#experience',
-    );
+  for (const target of locales.filter((language) => language !== locale)) {
+    test(`${locale} → ${target}: language switch retains the shared section and theme`, async ({
+      page,
+    }) => {
+      await page.goto(path);
+      await page.locator('.theme-control summary').click();
+      await page.getByRole('button', { name: content.ui.themeLabels.dark, exact: true }).click();
+      await page
+        .getByRole('navigation', { name: content.ui.mainNavigation })
+        .locator('a[href="#experience"]')
+        .click();
+      await expect(page.locator('.site-navigation [aria-current="location"]')).toHaveAttribute(
+        'href',
+        '#experience',
+      );
 
-    const language = page.getByRole('link', {
-      name: content.ui.languageLabels[target],
-      exact: true,
+      const trigger = page.locator('.language-switcher summary');
+      await trigger.focus();
+      await page.keyboard.press('Enter');
+      const language = page.getByRole('link', { name: languageNames[target], exact: true });
+      await expect(language).toHaveAttribute('href', `${localeRoute(target)}#experience`);
+      await language.focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(
+        (url) => url.pathname === localeRoute(target) && url.hash === '#experience',
+      );
+      await expect(page.locator('html')).toHaveAttribute('lang', target);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     });
-    await language.focus();
+  }
+
+  test(`${locale}: dropdowns use native focus order and dismiss predictably`, async ({ page }) => {
+    await page.goto(`${path}#missing`);
+    const language = page.locator('.language-switcher');
+    const theme = page.locator('.theme-control');
+    const languageTrigger = language.locator('summary');
+    const themeTrigger = theme.locator('summary');
+    await expect(languageTrigger).toHaveAccessibleName(languageName);
+    await expect(themeTrigger).toHaveAccessibleName(content.ui.themeGroup);
+    await expect(language.getByRole('link')).toHaveCount(0);
+
+    await languageTrigger.focus();
+    await page.keyboard.press('Space');
+    await expect(language).toHaveAttribute('open', '');
+    await expect(language.locator('[aria-current="page"]')).toHaveText(languageNames[locale]);
+    for (const target of locales) {
+      await page.keyboard.press('Tab');
+      const link = language.getByRole('link', { name: languageNames[target], exact: true });
+      await expect(link).toBeFocused();
+      await expect(link).toHaveAttribute('href', localeRoute(target));
+    }
+    await page.keyboard.press('Escape');
+    await expect(language).not.toHaveAttribute('open');
+    await expect(languageTrigger).toBeFocused();
+    await expect(languageTrigger).toHaveCSS('outline-style', 'solid');
+
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(
-      (url) => url.pathname === localeRoute(target) && url.hash === '#experience',
-    );
-    await expect(page.locator('html')).toHaveAttribute('lang', target);
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await themeTrigger.click();
+    await expect(language).not.toHaveAttribute('open');
+    await expect(theme).toHaveAttribute('open', '');
+    await themeTrigger.focus();
+    await page.keyboard.press('Tab');
+    await expect(theme.getByRole('button', { name: content.ui.themeLabels.system })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(theme).not.toHaveAttribute('open');
+    await expect(themeTrigger).toBeFocused();
+    await expect(themeTrigger).toHaveCSS('outline-style', 'solid');
+
+    await page.keyboard.press('Space');
+    await page.locator('.site-header').click({ position: { x: 2, y: 2 } });
+    await expect(theme).not.toHaveAttribute('open');
+
+    await languageTrigger.click();
+    await page.locator('.site-header').click({ position: { x: 2, y: 2 } });
+    await expect(language).not.toHaveAttribute('open');
   });
 
   test(`${locale}: accessible theme state, persistence and system preference`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto(path);
-    const system = page.getByRole('button', { name: content.ui.themeLabels.system, exact: true });
-    const light = page.getByRole('button', { name: content.ui.themeLabels.light, exact: true });
-    const dark = page.getByRole('button', { name: content.ui.themeLabels.dark, exact: true });
+    const theme = page.locator('.theme-control');
+    const trigger = theme.locator('summary');
+    const system = theme.getByRole('button', { name: content.ui.themeLabels.system, exact: true });
+    const light = theme.getByRole('button', { name: content.ui.themeLabels.light, exact: true });
+    const dark = theme.getByRole('button', { name: content.ui.themeLabels.dark, exact: true });
+    await trigger.click();
     await expect(system).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
     await light.focus();
     await page.keyboard.press('Space');
-    await expect(light).toHaveAttribute('aria-pressed', 'true');
+    await expect(trigger).toBeFocused();
+    await expect(theme).not.toHaveAttribute('open');
+
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await trigger.click();
+    await expect(light).toHaveAttribute('aria-pressed', 'true');
+    await expect(trigger.locator('[data-theme-icon="light"]')).toBeVisible();
 
     await dark.focus();
     await page.keyboard.press('Enter');
-    await expect(dark).toHaveAttribute('aria-pressed', 'true');
+    await expect(trigger).toBeFocused();
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await trigger.click();
+    await expect(dark).toHaveAttribute('aria-pressed', 'true');
 
     await system.click();
     await page.emulateMedia({ colorScheme: 'light' });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await trigger.click();
     await expect(system).toHaveAttribute('aria-pressed', 'true');
     expect(await page.evaluate(() => localStorage.getItem('portfolio-theme'))).toBeNull();
-    await expect(page.locator('.theme-button[aria-pressed="true"]')).toHaveCount(1);
+    await expect(theme.locator('[aria-pressed="true"]')).toHaveCount(1);
   });
 
   test(`${locale}: skip link and grouped disclosures work with the keyboard`, async ({ page }) => {
@@ -262,8 +325,8 @@ for (const locale of locales) {
     await page.keyboard.press('Enter');
     await expect(page.locator('main')).toBeFocused();
 
-    const entries = page.locator('details');
-    await expect(page.locator('details[open]')).toHaveCount(0);
+    const entries = page.locator('.experience-details');
+    await expect(page.locator('.experience-details[open]')).toHaveCount(0);
 
     const first = entries.nth(0);
     await first.locator('summary').focus();
@@ -276,7 +339,7 @@ for (const locale of locales) {
     await page.keyboard.press('Enter');
     await expect(second).toHaveAttribute('open', '');
     await expect(first).not.toHaveAttribute('open');
-    await expect(page.locator('details[open]')).toHaveCount(1);
+    await expect(page.locator('.experience-details[open]')).toHaveCount(1);
     expect(
       await second.locator('summary').evaluate((element) => getComputedStyle(element).outlineStyle),
     ).not.toBe('none');
@@ -286,8 +349,8 @@ for (const locale of locales) {
     page,
   }) => {
     await page.goto(path);
-    await page.locator('details summary').first().click();
-    await expect(page.locator('details').first()).toHaveAttribute('open', '');
+    await page.locator('.experience-details summary').first().click();
+    await expect(page.locator('.experience-details').first()).toHaveAttribute('open', '');
 
     const projectSource = page.locator('#work').getByRole('link', {
       name: content.independentProjects.sourceLink,
@@ -298,9 +361,23 @@ for (const locale of locales) {
       for (const colorScheme of ['light', 'dark'] as const) {
         await page.emulateMedia({ colorScheme });
         await expect(page.locator('html')).toHaveAttribute('data-theme', colorScheme);
-        expect(
-          await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-        ).toBe(true);
+        for (const selector of ['.language-switcher', '.theme-control']) {
+          const dropdown = page.locator(selector);
+          const header = page.locator('.site-header');
+          const height = (await header.boundingBox())?.height;
+          await dropdown.locator('summary').click();
+          const panel = dropdown.locator('.header-dropdown-panel');
+          await expect(panel).toBeInViewport({ ratio: 1 });
+          expect((await header.boundingBox())?.height).toBe(height);
+          expect(
+            await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+          ).toBe(true);
+        }
+
+        const languageTrigger = await page.locator('.language-switcher summary').boundingBox();
+        const themeTrigger = await page.locator('.theme-control summary').boundingBox();
+        expect(languageTrigger?.y).toBe(themeTrigger?.y);
+        await page.locator('.theme-control summary').click();
         await projectSource.scrollIntoViewIfNeeded();
         await expect(projectSource).toBeInViewport();
         const footer = page.getByRole('contentinfo');
@@ -316,7 +393,7 @@ for (const locale of locales) {
     await expect
       .poll(() =>
         page
-          .locator('details')
+          .locator('.experience-details')
           .first()
           .evaluate((element) => getComputedStyle(element, '::details-content').transitionDuration),
       )
@@ -324,22 +401,44 @@ for (const locale of locales) {
   });
 }
 
+test('theme preference synchronizes across localized tabs', async ({ page, context }) => {
+  const other = await context.newPage();
+  await page.goto(localeRoute('en'));
+  await other.goto(localeRoute('ko'));
+  const trigger = page.locator('.theme-control summary');
+  await trigger.click();
+  await page.locator('[data-theme-option="dark"]').click();
+  await expect(other.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await other.locator('.theme-control summary').click();
+  await expect(other.locator('[data-theme-option="dark"]')).toHaveAttribute('aria-pressed', 'true');
+  await other.locator('[data-theme-option="system"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await trigger.click();
+  await expect(page.locator('[data-theme-option="system"]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await other.close();
+});
+
 test.describe('native routing without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, colorScheme: 'dark' });
   for (const locale of locales) {
-    test(`${locale}: language links remain real routes and disclosures remain usable`, async ({
-      page,
-    }) => {
-      const content = getContent(locale);
-      const target = locale === 'fr' ? 'en' : 'fr';
-      await page.goto(locale === 'fr' ? 'fr/' : './');
-      await page.locator('details summary').first().click();
-      await expect(page.locator('details').first()).toHaveAttribute('open', '');
-      await page
-        .getByRole('link', { name: content.ui.languageLabels[target], exact: true })
-        .click();
-      await expect(page.locator('html')).toHaveAttribute('lang', target);
-      await expect(page.locator('.theme-control')).toBeHidden();
+    test(`${locale}: language links and experience disclosures remain usable`, async ({ page }) => {
+      for (const target of locales.filter((language) => language !== locale)) {
+        await page.goto(localeRoute(locale));
+        const disclosure = page.locator('.experience-details').first();
+        await disclosure.locator('summary').click();
+        await expect(disclosure).toHaveAttribute('open', '');
+        await expect(page.locator('.theme-control')).toBeHidden();
+        await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+        const language = page.locator('.language-switcher');
+        await language.locator('summary').click();
+        const link = language.getByRole('link', { name: languageNames[target], exact: true });
+        await expect(link).toHaveAttribute('href', localeRoute(target));
+        await link.click();
+        await expect(page.locator('html')).toHaveAttribute('lang', target);
+      }
     });
   }
 });
